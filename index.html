@@ -150,7 +150,46 @@
   }
   .tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
   .tab:not([aria-selected="true"]):hover{background:var(--surface-2);color:var(--ink)}
-  .kopf-werkzeug{margin-left:auto;display:flex;gap:6px}
+  .kopf-werkzeug{margin-left:auto;display:flex;gap:6px;align-self:center}
+
+  /* ---------- Am Handy: größere Flächen, weniger Gedränge ---------- */
+  @media (max-width:680px){
+    body{font-size:16.5px}
+    .kopf{padding:8px 14px 0;gap:8px}
+    .kopf h1{font-size:18px}
+    .heute-datum{display:none}
+    nav{padding:8px 14px 10px;gap:5px}
+    .tab{flex:1 1 0;min-width:0;padding:11px 4px;font-size:15px;min-height:48px;text-align:center}
+    #btnDrucken{display:none}
+    .icon-btn{min-height:44px;padding:0 14px;font-size:14.5px}
+    main{padding-left:14px;padding-right:14px;padding-block:16px 130px}
+
+    .pchip{min-height:44px;font-size:15px;padding:8px 14px}
+    .eintrag{grid-template-columns:5px 66px 1fr}
+    .eintrag .zeit{padding:15px 0 15px 12px;font-size:16px}
+    .eintrag .text{padding:15px 14px 15px 0}
+    .eintrag .titel{font-size:16.5px}
+    .eintrag .meta{font-size:14.5px}
+
+    .aufgabe{min-height:56px;font-size:16px;padding:12px 14px}
+    .aufgabe .haken{width:26px;height:26px}
+    .pk-fuss .knopf{min-height:52px}
+    .buchung{font-size:15px}
+    .buchung .b-weg{font-size:22px;padding:6px 10px}
+
+    .kal-tag{min-height:44px;font-size:16px}
+    .kal-leer{min-height:44px}
+    .kal-marke{min-height:38px;font-size:13.5px}
+    .kal-pfeil{min-width:44px;min-height:44px}
+    .knopf{min-height:52px;font-size:16px}
+    input[type=text],input[type=time],input[type=date],select,textarea{min-height:50px;font-size:16.5px}
+    .chip{min-height:48px;font-size:15.5px;padding:10px 14px}
+    .blatt{padding:16px 14px calc(16px + env(safe-area-inset-bottom, 0px))}
+    .neu{padding:15px 24px;font-size:17px;min-height:56px}
+    .nur-gross{display:none}
+    .wochen-kopf{flex-wrap:nowrap}
+    .wk-text{flex:1;text-align:center;font-size:15px}
+  }
   .icon-btn{
     background:var(--surface);border:1px solid var(--line);border-radius:10px;
     min-height:40px;min-width:40px;padding:0 12px;color:var(--muted);
@@ -236,6 +275,8 @@
   .tag .eintrag .text{padding:2px 10px 10px}
 
   .leer{color:var(--muted);font-size:14px;font-style:italic;padding:2px 0}
+  .tag.frei-tag{padding:9px 12px;background:transparent;border-style:dashed}
+  .tag.frei-tag h3 i{font-style:italic;font-weight:400;text-transform:none;letter-spacing:0}
 
   /* ---------- Wochenansicht: Stundenraster ---------- */
   .wochen-kopf{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
@@ -405,14 +446,20 @@
   .knopf.breit:hover{background:var(--accent-soft)}
   .knopf.loeschen{color:var(--danger);border-color:var(--danger);margin-left:auto;background:transparent}
 
-  .personen-tabelle{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
-  .preihe{display:flex;gap:8px;align-items:center}
-  .preihe input[type=text]{flex:1}
-  .preihe select{width:130px;flex:none}
-  .preihe .weg{
-    border:1px solid var(--line);background:var(--bg);border-radius:10px;
-    width:46px;min-height:46px;color:var(--danger);font-weight:700;flex:none;
+  .personen-tabelle{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+  /* Die Zeile bricht um, sobald für den Namen weniger als 190px bleiben –
+     dann steht das Textfeld ganz oben über die volle Breite. */
+  .preihe{
+    display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+    background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:8px;
   }
+  .preihe input[type=text]{flex:1 1 190px;min-width:0}
+  .preihe select{flex:1 1 120px;min-width:0;width:auto}
+  .preihe .weg{
+    border:1px solid var(--line);background:var(--surface);border-radius:10px;
+    width:50px;min-height:48px;color:var(--danger);font-weight:700;font-size:20px;flex:none;
+  }
+  .preihe .weg:hover{border-color:var(--danger)}
 
   /* ---------- Monatskalender im Formular ---------- */
   .kal{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px}
@@ -515,12 +562,12 @@
   .belohnung .b-kosten{
     font-family:"Archivo",sans-serif;color:var(--muted);font-variant-numeric:tabular-nums;flex:none;
   }
-  .preihe input.schmal{width:74px;flex:none;text-align:center;font-variant-numeric:tabular-nums}
+  .preihe input.schmal{width:78px;flex:0 0 78px;text-align:center;font-variant-numeric:tabular-nums}
   .kasten{
-    display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);
-    margin:-2px 0 6px 2px;
+    display:flex;align-items:center;gap:10px;font-size:15px;color:var(--muted);
+    flex:1 1 100%;min-height:44px;padding-left:2px;
   }
-  .kasten input{width:20px;height:20px}
+  .kasten input{width:22px;height:22px}
 
   /* ---------- Erinnerung ---------- */
   .merker{
@@ -601,17 +648,17 @@
   <div class="kopf">
     <h1>Familienplaner</h1>
     <span class="heute-datum" id="heuteDatum"></span>
+    <span class="kopf-werkzeug">
+      <button class="icon-btn" id="btnErinnerung" title="Erinnerungen auf diesem Gerät einschalten" hidden>Erinnerungen</button>
+      <button class="icon-btn" id="btnDrucken" title="Wochenplan drucken">Drucken</button>
+      <button class="icon-btn" id="btnPersonen" title="Personen verwalten">Personen</button>
+    </span>
   </div>
   <nav>
     <button class="tab ui" id="tabHeute" role="tab" aria-selected="true" data-tab="heute">Heute</button>
     <button class="tab ui" id="tabWoche" role="tab" aria-selected="false" data-tab="woche">Woche</button>
     <button class="tab ui" id="tabTermine" role="tab" aria-selected="false" data-tab="termine">Termine</button>
     <button class="tab ui" id="tabPunkte" role="tab" aria-selected="false" data-tab="punkte">Punkte</button>
-    <span class="kopf-werkzeug">
-      <button class="icon-btn" id="btnErinnerung" title="Erinnerungen auf diesem Gerät einschalten" hidden>Erinnerungen</button>
-      <button class="icon-btn" id="btnDrucken" title="Wochenplan drucken">Drucken</button>
-      <button class="icon-btn" id="btnPersonen" title="Personen verwalten">Personen</button>
-    </span>
   </nav>
 </header>
 
@@ -931,8 +978,9 @@ var FIREBASE_KONFIG = {
     var kopf = '<div class="wochen-kopf">'
       + '<button class="icon-btn" id="wocheZurueck" aria-label="Woche zurück">‹</button>'
       + '<span class="wk-text ui">' + basis.getDate()+"."+(basis.getMonth()+1)+". – "
-        + letzter.getDate()+"."+(letzter.getMonth()+1)+"."+letzter.getFullYear()
-        + (state.wochenVersatz===0 ? " · diese Woche" : "") + '</span>'
+        + letzter.getDate()+"."+(letzter.getMonth()+1)+"."
+        + (letzter.getFullYear()!==new Date().getFullYear() ? letzter.getFullYear() : "")
+        + (state.wochenVersatz===0 ? '<span class="nur-gross"> · diese Woche</span>' : "") + '</span>'
       + '<button class="icon-btn" id="wocheVor" aria-label="Woche vor">›</button>'
       + (state.wochenVersatz!==0 ? '<button class="icon-btn" id="wocheHeute">Heute</button>' : "")
       + '</div>';
@@ -945,10 +993,11 @@ var FIREBASE_KONFIG = {
   function wochenListeHtml(tage){
     var html = '<div class="wochenraster">';
     tage.forEach(function(t){
-      html += '<div class="tag'+(t.istHeute?" ist-heute":"")+'">'
-        + '<h3><span>'+TAGE[t.index]+'</span><span>'+t.datum.getDate()+"."+(t.datum.getMonth()+1)+'.</span></h3>'
-        + (t.eintraege.length ? t.eintraege.map(function(e){ return eintragHtml(e); }).join("")
-                              : '<p class="leer">frei</p>')
+      var frei = !t.eintraege.length;
+      html += '<div class="tag'+(t.istHeute?" ist-heute":"")+(frei?" frei-tag":"")+'">'
+        + '<h3><span>'+TAGE[t.index]+'</span><span>'+t.datum.getDate()+"."+(t.datum.getMonth()+1)+'.'
+        + (frei ? ' <i>frei</i>' : "") + '</span></h3>'
+        + (frei ? "" : t.eintraege.map(function(e){ return eintragHtml(e); }).join(""))
         + '</div>';
     });
     return html + '</div>';
@@ -1732,9 +1781,9 @@ var FIREBASE_KONFIG = {
               }).join("")
           + '</select>'
           + '<button class="weg" data-weg="'+i+'" aria-label="Person entfernen">×</button>'
-          + '</div>'
           + '<label class="kasten"><input type="checkbox" data-i="'+i+'" data-feld="sammelt"'
-          + (p.sammelt?" checked":"")+'> sammelt Belohnungspunkte</label>';
+          + (p.sammelt?" checked":"")+'> sammelt Belohnungspunkte</label>'
+          + '</div>';
       }).join("");
     }
     zeichnePersonen();
