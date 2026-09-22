@@ -242,6 +242,8 @@
   .eintrag .titel{font-weight:600;line-height:1.25;overflow-wrap:anywhere}
   .eintrag .meta{color:var(--muted);font-size:13.5px;overflow-wrap:anywhere}
   .eintrag .wer{color:var(--pf, var(--muted));font-weight:600}
+  .eintrag .wer.fuer-alle{color:var(--muted)}
+  .kal-anzahl.fehlt{color:var(--danger)}
   .eintrag.erledigt{opacity:.5}
 
   .daheim{
@@ -856,7 +858,7 @@ var FIREBASE_KONFIG = {
   }
 
   // ---------- Darstellung ----------
-  function sichtbar(e){ return !state.filter || e.personId===state.filter; }
+  function sichtbar(e){ return !state.filter || e.personId===state.filter || !e.personId; }
 
   function eintragHtml(e, opts){
     opts = opts || {};
@@ -865,7 +867,7 @@ var FIREBASE_KONFIG = {
     var zeit = e.von ? escape(e.von) : "—";
     var bis = e.bis ? '<span class="bis">'+escape(e.bis)+'</span>' : "";
     var meta = [];
-    if(p) meta.push('<span class="wer">'+escape(p.name)+'</span>');
+    meta.push('<span class="wer'+(p?"":" fuer-alle")+'">'+escape(werName(e))+'</span>');
     if(e.art && e.art!=="Sonstiges") meta.push(escape(e.art));
     if(e.ort) meta.push(escape(e.ort));
     if(opts.datum && e.datum) meta.unshift(escape(datumLang(e.datum)));
@@ -1066,9 +1068,9 @@ var FIREBASE_KONFIG = {
               var heim = e.daheim ? ' <i>&rarr; '+escape(e.daheim)+'</i>' : "";
               return '<button class="gt-block" style="--pf:'+farbVar(p)+';--pw:'+farbVarWeich(p)+'" '
                 + 'data-art="'+escape(e._quelle)+'" data-id="'+escape(e.id)+'" '
-                + 'title="'+escape(spanne+" "+e.titel+(p?" ("+p.name+")":"")
+                + 'title="'+escape(spanne+" "+e.titel+" ("+werName(e)+")"
                     +(e.daheim?" – daheim um "+e.daheim:""))+'">'
-                + '<b>'+escape(e.titel)+(p?' · '+escape(p.name):"")+'</b>'
+                + '<b>'+escape(e.titel)+' · '+escape(werName(e))+'</b>'
                 + '<span>'+escape(spanne)+heim+'</span>'
                 + '</button>';
             }).join("")
@@ -1108,9 +1110,9 @@ var FIREBASE_KONFIG = {
           + 'top:'+oben+'px;height:'+h+'px;z-index:'+(x.spur+1)+';'
           + 'left:calc('+links+'% + 2px);width:calc('+breite+'% - 4px)" '
           + 'data-art="'+escape(x.e._quelle)+'" data-id="'+escape(x.e.id)+'" '
-          + 'title="'+escape(x.e.von+(x.e.bis?"–"+x.e.bis:"")+" "+x.e.titel+(p?" ("+p.name+")":""))+'">'
+          + 'title="'+escape(x.e.von+(x.e.bis?"–"+x.e.bis:"")+" "+x.e.titel+" ("+werName(x.e)+")")+'">'
           + '<span class="bl-titel">'+escape(x.e.titel)+'</span>'
-          + '<span class="bl-neben">'+escape(x.e.von)+(p?' · '+escape(p.name):"")+'</span>'
+          + '<span class="bl-neben">'+escape(x.e.von)+' · '+escape(werName(x.e))+'</span>'
           + '</button>';
       });
       html += '</div>';
@@ -1173,7 +1175,7 @@ var FIREBASE_KONFIG = {
 
     eintraege.forEach(function(e){
       var p = person(e.personId);
-      var titel = e.titel + (p ? " – " + p.name : "");
+      var titel = e.titel + " – " + werName(e);
       var von = e.von || "09:00";
       var bis = (e.bis && e.bis > von) ? e.bis : zeitPlus(von, 45);
       var start, wiederholung = null, uid;
@@ -1521,9 +1523,16 @@ var FIREBASE_KONFIG = {
   document.addEventListener("keydown", function(e){ if(e.key==="Escape") blattSchliessen(); });
 
   function personOptionen(gewaehlt){
-    return state.personen.map(function(p){
-      return '<option value="'+escape(p.id)+'"'+(p.id===gewaehlt?" selected":"")+'>'+escape(p.name)+'</option>';
+    // "Alle" für Sachen, die die ganze Familie betreffen (Urlaub, Ausflug, Geburtstag)
+    var html = '<option value=""'+(gewaehlt===""?" selected":"")+'>Alle</option>';
+    return html + state.personen.map(function(p, i){
+      var an = (gewaehlt === undefined) ? (i===0) : (p.id === gewaehlt);
+      return '<option value="'+escape(p.id)+'"'+(an?" selected":"")+'>'+escape(p.name)+'</option>';
     }).join("");
+  }
+  function werName(e){
+    var p = person(e.personId);
+    return p ? p.name : "Alle";
   }
 
   function eintragFormular(quelle, id){
@@ -1557,7 +1566,7 @@ var FIREBASE_KONFIG = {
       + '<div class="feld"><label for="fTitel">Was</label>'
         + '<input type="text" id="fTitel" value="'+escape(e.titel||"")+'" placeholder="z. B. Schule, Gitarre, Dr. Berger"></div>'
       + '<div class="feld"><label for="fArt">Kategorie</label><select id="fArt">'
-        + ARTEN.map(function(a){ return '<option'+(a===(e.art||"Schule")?" selected":"")+'>'+a+'</option>'; }).join("")
+        + ARTEN.map(function(a){ return '<option'+(a===(e.art||"Sonstiges")?" selected":"")+'>'+a+'</option>'; }).join("")
         + '</select></div>'
       + '<div class="feld" id="feldTage"><label>An welchen Tagen</label><div class="chips" id="fTage">'
         + TAGE_KURZ.map(function(t,i){
@@ -1612,7 +1621,9 @@ var FIREBASE_KONFIG = {
     );
 
     // --- Monatskalender mit Mehrfachauswahl ---
-    var gewaehlteDaten = (vorhanden && quelle==="termine" && e.datum) ? [e.datum] : [heuteIso()];
+    // Bei einem neuen Termin ist absichtlich kein Tag vorgewählt – sonst legt
+    // man versehentlich einen zusätzlichen Termin für heute an.
+    var gewaehlteDaten = (vorhanden && quelle==="termine" && e.datum) ? [e.datum] : [];
     var kalMonat;
     (function(){
       var t = (gewaehlteDaten[0] || heuteIso()).split("-");
@@ -1636,7 +1647,9 @@ var FIREBASE_KONFIG = {
       }
       g.innerHTML = html;
       var n = gewaehlteDaten.length;
-      b.querySelector("#kalAnzahl").textContent = n===0 ? "kein Tag gewählt" : (n===1 ? "1 Termin" : n+" Termine");
+      var za = b.querySelector("#kalAnzahl");
+      za.textContent = n===0 ? "Tag antippen" : (n===1 ? "1 Termin" : n+" Termine");
+      if(n) za.classList.remove("fehlt");
       b.querySelector("#kalReihe").hidden = !!vorhanden;
 
       var lst = b.querySelector("#kalListe");
@@ -1748,7 +1761,13 @@ var FIREBASE_KONFIG = {
         else { tage.forEach(function(t){ anlegen("wochenplan", Object.assign({tag:t}, daten)); }); }
       } else {
         var tage = gewaehlteDaten.slice().sort();
-        if(!tage.length) return;
+        if(!tage.length){
+          var za2 = b.querySelector("#kalAnzahl");
+          za2.classList.add("fehlt");
+          za2.textContent = "Bitte einen Tag antippen";
+          try{ b.querySelector(".kal").scrollIntoView({block:"center", behavior:"smooth"}); }catch(_){}
+          return;
+        }
         if(vorhanden){
           speichern("termine", id, Object.assign({datum:tage[0]}, daten));
         } else {
