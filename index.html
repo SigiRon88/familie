@@ -40,6 +40,13 @@
     --p-stahl:#2D5C86;
     --p-ziegel:#A34237;
     --p-schiefer:#4A5560;
+
+    --p-pine-weich:#E4F0EB;
+    --p-plum-weich:#F2E6EF;
+    --p-ocker-weich:#F7EDDA;
+    --p-stahl-weich:#E2ECF6;
+    --p-ziegel-weich:#F8E6E3;
+    --p-schiefer-weich:#E9ECEA;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
@@ -61,6 +68,13 @@
       --p-stahl:#7FB0DE;
       --p-ziegel:#E08A7E;
       --p-schiefer:#A8B4AB;
+
+      --p-pine-weich:#1E3A31;
+      --p-plum-weich:#35263180;
+      --p-ocker-weich:#3A3120;
+      --p-stahl-weich:#22303D;
+      --p-ziegel-weich:#3A2926;
+      --p-schiefer-weich:#2A312C;
     }
   }
   :root[data-theme="dark"]{
@@ -82,6 +96,13 @@
     --p-stahl:#7FB0DE;
     --p-ziegel:#E08A7E;
     --p-schiefer:#A8B4AB;
+
+    --p-pine-weich:#1E3A31;
+    --p-plum-weich:#352631;
+    --p-ocker-weich:#3A3120;
+    --p-stahl-weich:#22303D;
+    --p-ziegel-weich:#3A2926;
+    --p-schiefer-weich:#2A312C;
   }
 
   *{box-sizing:border-box}
@@ -250,11 +271,22 @@
     border-left:1px solid var(--line);padding:5px;display:flex;flex-direction:column;gap:4px;
     min-height:34px;
   }
+  .gt-zelle.ist-heute{background:var(--accent-soft)}
   .gt-block{
-    background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--pf);
-    border-radius:6px;padding:4px 7px;font-size:12.5px;font-weight:600;text-align:left;
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);
+    background:var(--pw);border:1px solid transparent;border-left:3px solid var(--pf);
+    border-radius:6px;padding:4px 7px;text-align:left;color:var(--ink);
+    display:flex;flex-direction:column;gap:1px;overflow:hidden;min-width:0;
   }
+  .gt-block:hover{border-color:var(--pf)}
+  .gt-block b{
+    font-size:12.5px;font-weight:700;line-height:1.2;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .gt-block span{
+    font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .gt-block i{font-style:normal;color:var(--pf);font-weight:700}
 
   .raster-koerper{
     position:relative;
@@ -271,23 +303,22 @@
     background:repeating-linear-gradient(
       to bottom,
       var(--line) 0px, var(--line) 1px,
-      transparent 1px, transparent 51px
+      transparent 1px, transparent var(--stunde, 51px)
     );
   }
   .raster-spalte.ist-heute{
     background:
-      repeating-linear-gradient(to bottom, var(--line) 0px, var(--line) 1px, transparent 1px, transparent 51px),
+      repeating-linear-gradient(to bottom, var(--line) 0px, var(--line) 1px, transparent 1px, transparent var(--stunde, 51px)),
       var(--accent-soft);
   }
   .block{
-    position:absolute;overflow:hidden;text-align:left;
-    background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--pf);
+    position:absolute;overflow:hidden;text-align:left;min-width:0;
+    background:var(--pw);border:1px solid transparent;border-left:3px solid var(--pf);
     border-radius:7px;padding:4px 6px;display:flex;flex-direction:column;gap:1px;
-    box-shadow:0 1px 2px rgba(0,0,0,.08);
   }
-  .block:hover{border-color:var(--muted);border-left-color:var(--pf);z-index:3}
+  .block:hover{border-color:var(--pf);z-index:3}
   .bl-titel{
-    font-weight:600;font-size:12.5px;line-height:1.2;color:var(--ink);
+    font-weight:700;font-size:12.5px;line-height:1.2;color:var(--ink);
     overflow:hidden;text-overflow:ellipsis;
   }
   .bl-neben{
@@ -297,6 +328,10 @@
   .block.kurz{flex-direction:row;align-items:baseline;gap:5px;padding:2px 6px}
   .block.kurz .bl-titel{font-size:12px;white-space:nowrap}
   .block.kurz .bl-neben{font-size:11px}
+  /* Bei drei oder mehr Terminen nebeneinander bleibt nur der Name */
+  .block.schmal{padding:3px 4px;border-left-width:4px}
+  .block.schmal .bl-titel{font-size:11.5px;white-space:nowrap}
+  .block.schmal .bl-neben{display:none}
   .jetzt-linie{
     position:absolute;left:56px;right:0;height:2px;background:var(--danger);
     z-index:4;pointer-events:none;
@@ -366,6 +401,8 @@
     background:var(--bg);
   }
   .knopf.haupt{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);flex:1}
+  .knopf.breit{flex:1;border-color:var(--accent);color:var(--accent)}
+  .knopf.breit:hover{background:var(--accent-soft)}
   .knopf.loeschen{color:var(--danger);border-color:var(--danger);margin-left:auto;background:transparent}
 
   .personen-tabelle{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
@@ -528,7 +565,7 @@
     .rk-tag,.gt-zelle,.raster-spalte{border-left:1px solid #999}
     .rk-tag.ist-heute,.raster-spalte.ist-heute{background:#fff}
     .raster-spalte{
-      background:repeating-linear-gradient(to bottom,#ddd 0px,#ddd 1px,transparent 1px,transparent 51px) !important;
+      background:repeating-linear-gradient(to bottom,#ddd 0px,#ddd 1px,transparent 1px,transparent var(--stunde, 51px)) !important;
     }
     .block,.gt-block{background:#fff;border:1px solid #999;border-left:3px solid #000;box-shadow:none}
     .bl-neben{color:#444}
@@ -699,6 +736,7 @@ var FIREBASE_KONFIG = {
     return null;
   }
   function farbVar(p){ return "var(--p-"+((p&&p.farbe)||"schiefer")+")"; }
+  function farbVarWeich(p){ return "var(--p-"+((p&&p.farbe)||"schiefer")+"-weich)"; }
   function neueId(){
     if(window.crypto && crypto.randomUUID) return crypto.randomUUID().replace(/-/g,"").slice(0,16);
     return "x"+Math.random().toString(36).slice(2,12)+Date.now().toString(36);
@@ -917,29 +955,47 @@ var FIREBASE_KONFIG = {
   }
 
   function wochenRasterHtml(tage){
-    var PX_PRO_MIN = 0.85;
+    var PX_PRO_MIN;
     var STANDARD_DAUER = 45;
+    var LANG_AB = 170;   // ab dieser Dauer in Minuten nicht mehr ins Raster
 
-    // Zeitbereich der Woche bestimmen
-    var frueh = 7*60, spaet = 19*60;
+    // Einträge aufteilen: lange Blöcke (Schule, Arbeit) nach oben, der Rest ins Raster
     tage.forEach(function(t){
+      t.oben = [];
+      t.raster = [];
       t.eintraege.forEach(function(e){
         var v = zeitZuMin(e.von);
-        if(v === null) return;
+        if(v === null){ t.oben.push({e:e}); return; }
         var bis = zeitZuMin(e.bis);
-        var ende = (bis !== null && bis > v) ? bis : v + STANDARD_DAUER;
-        if(e.daheim){
-          var dh = zeitZuMin(e.daheim);
-          if(dh !== null && dh > ende) ende = dh;
-        }
-        if(v < frueh) frueh = v;
-        if(ende > spaet) spaet = ende;
+        var bEnde = (bis !== null && bis > v) ? bis : v + STANDARD_DAUER;
+        if(bEnde - v >= LANG_AB) t.oben.push({e:e, start:v, ende:bEnde});
+        else t.raster.push({e:e, start:v, ende:bEnde});
       });
     });
-    var start = Math.floor(frueh/60)*60;
-    var ende = Math.ceil(spaet/60)*60;
-    if(ende - start < 480) ende = start + 480;
-    var hoehe = Math.round((ende-start)*PX_PRO_MIN);
+
+    // Zeitbereich nur aus den Rasterterminen
+    var frueh = null, spaet = null;
+    tage.forEach(function(t){
+      t.raster.forEach(function(x){
+        if(frueh === null || x.start < frueh) frueh = x.start;
+        var e2 = x.ende;
+        if(x.e.daheim){
+          var dh = zeitZuMin(x.e.daheim);
+          if(dh !== null && dh > e2) e2 = dh;
+        }
+        if(spaet === null || e2 > spaet) spaet = e2;
+      });
+    });
+    if(frueh === null){ frueh = 8*60; spaet = 18*60; }
+    var start = Math.floor((frueh-30)/60)*60;
+    var ende = Math.ceil((spaet+30)/60)*60;
+    if(start < 0) start = 0;
+    if(ende - start < 180) ende = start + 180;      // mindestens 3 Stunden zeigen
+    if(ende > 24*60) ende = 24*60;
+    // Kleine Zeitfenster werden gedehnt, damit die Blöcke lesbar bleiben
+    var fenster = ende - start;
+    PX_PRO_MIN = fenster <= 300 ? 1.15 : (fenster <= 480 ? 0.9 : 0.75);
+    var hoehe = Math.round(fenster*PX_PRO_MIN);
 
     // Kopfzeile
     var html = '<div class="raster">';
@@ -950,18 +1006,22 @@ var FIREBASE_KONFIG = {
     });
     html += '</div>';
 
-    // Ganztägige Einträge (ohne Uhrzeit)
-    var hatGanztags = tage.some(function(t){
-      return t.eintraege.some(function(e){ return !e.von; });
-    });
-    if(hatGanztags){
-      html += '<div class="raster-ganztags"><span class="rk-ecke">ganztags</span>';
+    // Zeile für lange Einträge
+    if(tage.some(function(t){ return t.oben.length; })){
+      html += '<div class="raster-ganztags"><span class="rk-ecke">tagsüber</span>';
       tage.forEach(function(t){
-        html += '<span class="gt-zelle">'
-          + t.eintraege.filter(function(e){ return !e.von; }).map(function(e){
-              var p = person(e.personId);
-              return '<button class="gt-block" style="--pf:'+farbVar(p)+'" data-art="'+escape(e._quelle)
-                + '" data-id="'+escape(e.id)+'">'+escape(e.titel)+'</button>';
+        html += '<span class="gt-zelle'+(t.istHeute?" ist-heute":"")+'">'
+          + t.oben.sort(function(a,b){ return (a.start||0)-(b.start||0); }).map(function(x){
+              var e = x.e, p = person(e.personId);
+              var spanne = e.von ? (e.von + (e.bis ? "–"+e.bis : "")) : "ganztags";
+              var heim = e.daheim ? ' <i>&rarr; '+escape(e.daheim)+'</i>' : "";
+              return '<button class="gt-block" style="--pf:'+farbVar(p)+';--pw:'+farbVarWeich(p)+'" '
+                + 'data-art="'+escape(e._quelle)+'" data-id="'+escape(e.id)+'" '
+                + 'title="'+escape(spanne+" "+e.titel+(p?" ("+p.name+")":"")
+                    +(e.daheim?" – daheim um "+e.daheim:""))+'">'
+                + '<b>'+escape(e.titel)+(p?' · '+escape(p.name):"")+'</b>'
+                + '<span>'+escape(spanne)+heim+'</span>'
+                + '</button>';
             }).join("")
           + '</span>';
       });
@@ -975,29 +1035,29 @@ var FIREBASE_KONFIG = {
         + minZuZeit(m) + '</span>';
     }
 
-    html += '<div class="raster-koerper" style="height:'+hoehe+'px">'
+    html += '<div class="raster-koerper" style="height:'+hoehe+'px;--stunde:'+(60*PX_PRO_MIN)+'px">'
       + '<div class="raster-stunden">'+stunden+'</div>';
 
     tage.forEach(function(t){
-      var bloecke = [];
-      t.eintraege.forEach(function(e){
-        var v = zeitZuMin(e.von);
-        if(v === null) return;
-        var bis = zeitZuMin(e.bis);
-        var bEnde = (bis !== null && bis > v) ? bis : v + STANDARD_DAUER;
-        bloecke.push({ start:v, ende:bEnde, e:e });
-      });
-      spurenVerteilen(bloecke);
+      var bloecke = spurenVerteilen(t.raster.slice());
 
       html += '<div class="raster-spalte'+(t.istHeute?" ist-heute":"")+'">';
       bloecke.forEach(function(x){
         var p = person(x.e.personId);
         var oben = Math.round((x.start-start)*PX_PRO_MIN);
-        var h = Math.max(22, Math.round((x.ende-x.start)*PX_PRO_MIN) - 2);
-        var breite = 100 / (x.spuren || 1);
-        var klasse = h < 42 ? " kurz" : "";
-        html += '<button class="block'+klasse+'" style="--pf:'+farbVar(p)+';top:'+oben+'px;height:'+h+'px;'
-          + 'left:calc('+(x.spur*breite)+'% + 2px);width:calc('+breite+'% - 4px)" '
+        var h = Math.max(20, Math.round((x.ende-x.start)*PX_PRO_MIN) - 2);
+        var spuren = x.spuren || 1;
+        var schritt = 100 / spuren;
+        // Bei mehreren gleichzeitigen Terminen dürfen sich die Blöcke leicht
+        // überlappen – so bleibt für jeden Namen genug Breite.
+        var links = x.spur * schritt;
+        var breite = spuren > 1 ? Math.min(schritt*1.45, 100 - links) : schritt;
+        var klasse = "";
+        if(h < 40) klasse += " kurz";
+        if(spuren > 2) klasse += " schmal";
+        html += '<button class="block'+klasse+'" style="--pf:'+farbVar(p)+';--pw:'+farbVarWeich(p)+';'
+          + 'top:'+oben+'px;height:'+h+'px;z-index:'+(x.spur+1)+';'
+          + 'left:calc('+links+'% + 2px);width:calc('+breite+'% - 4px)" '
           + 'data-art="'+escape(x.e._quelle)+'" data-id="'+escape(x.e.id)+'" '
           + 'title="'+escape(x.e.von+(x.e.bis?"–"+x.e.bis:"")+" "+x.e.titel+(p?" ("+p.name+")":""))+'">'
           + '<span class="bl-titel">'+escape(x.e.titel)+'</span>'
@@ -1019,6 +1079,115 @@ var FIREBASE_KONFIG = {
     return html + '</div></div>';
   }
 
+  // ---------- Kalender-Datei (.ics) für Handy-Kalender ----------
+  var ICS_TAGE = ["MO","TU","WE","TH","FR","SA","SU"];
+
+  function icsText(s){
+    return String(s==null?"":s)
+      .replace(/\\/g, "\\\\").replace(/;/g, "\\;")
+      .replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+  }
+  function icsStempel(){
+    var d = new Date();
+    function p(n){ return pad(n); }
+    return d.getUTCFullYear()+p(d.getUTCMonth()+1)+p(d.getUTCDate())+"T"
+         + p(d.getUTCHours())+p(d.getUTCMinutes())+p(d.getUTCSeconds())+"Z";
+  }
+  function icsZeitpunkt(datumIso, zeit){
+    return datumIso.replace(/-/g,"") + "T" + (zeit||"09:00").replace(":","") + "00";
+  }
+  function zeitPlus(zeit, minuten){
+    var m = zeitZuMin(zeit);
+    if(m === null) return null;
+    m = (m + minuten) % 1440;
+    return minZuZeit(m);
+  }
+  function naechsterWochentag(tagIndex){
+    var d = new Date();
+    d.setHours(0,0,0,0);
+    var heuteIdx = (d.getDay()+6)%7;
+    var diff = (tagIndex - heuteIdx + 7) % 7;
+    d.setDate(d.getDate() + diff);
+    return d;
+  }
+
+  // Erzeugt den Inhalt einer Kalender-Datei für die übergebenen Einträge.
+  function icsBauen(eintraege){
+    var zeilen = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//Familienplaner//DE",
+      "CALSCALE:GREGORIAN",
+      "METHOD:PUBLISH"
+    ];
+    var stempel = icsStempel();
+
+    eintraege.forEach(function(e){
+      var p = person(e.personId);
+      var titel = e.titel + (p ? " – " + p.name : "");
+      var von = e.von || "09:00";
+      var bis = (e.bis && e.bis > von) ? e.bis : zeitPlus(von, 45);
+      var start, wiederholung = null, uid;
+
+      if(e._quelle === "wochenplan"){
+        var d = naechsterWochentag(e.tag);
+        start = isoVon(d);
+        var ende = new Date(d.getTime());
+        ende.setFullYear(ende.getFullYear()+1);
+        wiederholung = "RRULE:FREQ=WEEKLY;BYDAY=" + ICS_TAGE[e.tag]
+                     + ";UNTIL=" + isoVon(ende).replace(/-/g,"") + "T235959";
+        uid = "w-" + e.id + "@familienplaner";
+      } else {
+        start = e.datum;
+        uid = "t-" + e.id + "@familienplaner";
+      }
+      if(!start) return;
+
+      zeilen.push("BEGIN:VEVENT");
+      zeilen.push("UID:" + uid);
+      zeilen.push("DTSTAMP:" + stempel);
+      zeilen.push("DTSTART:" + icsZeitpunkt(start, von));
+      zeilen.push("DTEND:" + icsZeitpunkt(start, bis));
+      if(wiederholung) zeilen.push(wiederholung);
+      zeilen.push("SUMMARY:" + icsText(titel));
+      if(e.ort) zeilen.push("LOCATION:" + icsText(e.ort));
+      var text = [];
+      if(e.notiz) text.push(e.notiz);
+      if(e.daheim) text.push("Zu Hause um " + e.daheim);
+      if(text.length) zeilen.push("DESCRIPTION:" + icsText(text.join(" · ")));
+      if(e.erinnerungMin > 0){
+        zeilen.push("BEGIN:VALARM");
+        zeilen.push("TRIGGER:-PT" + e.erinnerungMin + "M");
+        zeilen.push("ACTION:DISPLAY");
+        zeilen.push("DESCRIPTION:" + icsText(titel));
+        zeilen.push("END:VALARM");
+      }
+      zeilen.push("END:VEVENT");
+    });
+
+    zeilen.push("END:VCALENDAR");
+    return zeilen.join("\r\n");
+  }
+
+  function icsHerunterladen(eintraege, dateiname){
+    if(!eintraege || !eintraege.length) return;
+    var text = icsBauen(eintraege);
+    try{
+      var blob = new Blob([text], {type:"text/calendar;charset=utf-8"});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = (dateiname || "termine").replace(/[^A-Za-z0-9_-]/g,"_") + ".ics";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){
+        try{ document.body.removeChild(a); URL.revokeObjectURL(url); }catch(_){}
+      }, 1500);
+    }catch(_){
+      meldung("Die Kalender-Datei konnte nicht erzeugt werden.", null, null, "fehler");
+    }
+  }
+
   function zeichneTermine(){
     var heute = heuteIso();
     var alle = state.termine.filter(sichtbar).sort(function(a,b){
@@ -1033,7 +1202,14 @@ var FIREBASE_KONFIG = {
       gruppen[e.datum].push(e);
     });
 
-    var html = '<section class="abschnitt"><div class="abschnitt-kopf"><h2>Kommende Termine</h2>'
+    var html = "";
+    if(kommend.length){
+      var wer = state.filter && person(state.filter) ? person(state.filter).name : null;
+      html += '<div class="wochen-kopf"><button class="icon-btn" id="btnIcsAlle">'
+        + (wer ? 'Termine von '+escape(wer)+' in den Kalender' : 'Alle Termine in den Kalender')
+        + '</button></div>';
+    }
+    html += '<section class="abschnitt"><div class="abschnitt-kopf"><h2>Kommende Termine</h2>'
       + '<span class="zaehler">'+kommend.length+'</span></div>';
     if(!kommend.length){
       html += '<p class="leer">Keine Termine eingetragen.</p>';
@@ -1240,6 +1416,16 @@ var FIREBASE_KONFIG = {
     var bv = el("btnVergangene");
     if(bv) bv.onclick = function(){ state.vergangeneZeigen = !state.vergangeneZeigen; zeichne(); };
 
+    var bi = el("btnIcsAlle");
+    if(bi) bi.onclick = function(){
+      var h = heuteIso();
+      var liste = state.termine.filter(function(x){ return sichtbar(x) && x.datum >= h; })
+        .sort(function(a,b){ return a.datum<b.datum?-1:a.datum>b.datum?1:0; })
+        .map(function(x){ return Object.assign({_quelle:"termine"}, x); });
+      var p = state.filter ? person(state.filter) : null;
+      icsHerunterladen(liste, p ? "termine-"+p.name : "familientermine");
+    };
+
     if(state.tab==="woche"){
       var wz = el("wocheZurueck"), wv = el("wocheVor"), wh = el("wocheHeute");
       if(wz) wz.onclick = function(){ state.wochenVersatz--; zeichne(); };
@@ -1300,6 +1486,15 @@ var FIREBASE_KONFIG = {
     }
     var e = vorhanden || {};
     var istWoche = vorhanden ? quelle==="wochenplan" : true;
+
+    // Gehört der Eintrag zu einer Reihe gleicher Termine? Dann alle zusammen anbieten.
+    var serie = [];
+    if(vorhanden && quelle==="termine"){
+      var abIso = heuteIso();
+      serie = state.termine.filter(function(x){
+        return x.titel===e.titel && x.personId===e.personId && x.von===e.von && x.datum >= abIso;
+      }).sort(function(a,b){ return a.datum<b.datum?-1:a.datum>b.datum?1:0; });
+    }
     var gewaehlteTage = vorhanden && quelle==="wochenplan" ? [e.tag] : [tagIndexHeute()];
 
     var b = blattOeffnen(
@@ -1357,6 +1552,9 @@ var FIREBASE_KONFIG = {
         + '<input type="text" id="fOrt" value="'+escape(e.ort||"")+'" placeholder="z. B. Musikschule Mittersill"></div>'
       + '<div class="feld"><label for="fNotiz">Notiz</label>'
         + '<textarea id="fNotiz" placeholder="z. B. Bus 9:20, E-Card mitnehmen">'+escape(e.notiz||"")+'</textarea></div>'
+      + (vorhanden ? '<div class="blatt-fuss"><button class="knopf breit" id="fKalender">'
+            + (serie.length > 1 ? 'Alle '+serie.length+' in den Handy-Kalender' : 'In den Handy-Kalender')
+            + '</button></div>' : "")
       + '<div class="blatt-fuss">'
         + '<button class="knopf haupt" id="fSpeichern">Speichern</button>'
         + '<button class="knopf" id="fAbbrechen">Abbrechen</button>'
@@ -1463,6 +1661,14 @@ var FIREBASE_KONFIG = {
     });
 
     b.querySelector("#fAbbrechen").addEventListener("click", blattSchliessen);
+    if(vorhanden){
+      b.querySelector("#fKalender").addEventListener("click", function(){
+        var liste = (serie.length > 1 ? serie : [e]).map(function(x){
+          return Object.assign({_quelle:quelle}, x);
+        });
+        icsHerunterladen(liste, e.titel || "termin");
+      });
+    }
     if(vorhanden){
       b.querySelector("#fLoeschen").addEventListener("click", function(){
         entfernen(quelle, id); blattSchliessen();
