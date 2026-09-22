@@ -1,0 +1,1494 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1F5D4C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Familienplaner">
+<title>Familienplaner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+  html{color-scheme:light dark;-webkit-text-size-adjust:100%}
+  :root{
+    padding-top:env(safe-area-inset-top, 0px);
+    padding-bottom:env(safe-area-inset-bottom, 0px);
+  }
+  body{margin:0}
+  img{max-width:100%}
+  [hidden]{display:none !important}
+
+  :root{
+    --bg:#F4F5F2;
+    --surface:#FFFFFF;
+    --surface-2:#EAEDE8;
+    --ink:#1A211E;
+    --muted:#66716B;
+    --line:#D6DDD6;
+    --accent:#1F5D4C;
+    --accent-ink:#FFFFFF;
+    --accent-soft:#DDEAE3;
+    --danger:#9E3B30;
+    --shadow:0 1px 2px rgba(26,33,30,.07), 0 6px 18px rgba(26,33,30,.06);
+
+    --p-pine:#2F6F5C;
+    --p-plum:#7B3F6B;
+    --p-ocker:#A8720E;
+    --p-stahl:#2D5C86;
+    --p-ziegel:#A34237;
+    --p-schiefer:#4A5560;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#141813;
+      --surface:#1E241F;
+      --surface-2:#27302A;
+      --ink:#E9EEE8;
+      --muted:#9AA69D;
+      --line:#333D36;
+      --accent:#6FC0A5;
+      --accent-ink:#10231C;
+      --accent-soft:#243A31;
+      --danger:#E08A7E;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.35);
+
+      --p-pine:#6FC0A5;
+      --p-plum:#C48FB6;
+      --p-ocker:#E0A94A;
+      --p-stahl:#7FB0DE;
+      --p-ziegel:#E08A7E;
+      --p-schiefer:#A8B4AB;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#141813;
+    --surface:#1E241F;
+    --surface-2:#27302A;
+    --ink:#E9EEE8;
+    --muted:#9AA69D;
+    --line:#333D36;
+    --accent:#6FC0A5;
+    --accent-ink:#10231C;
+    --accent-soft:#243A31;
+    --danger:#E08A7E;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.35);
+
+    --p-pine:#6FC0A5;
+    --p-plum:#C48FB6;
+    --p-ocker:#E0A94A;
+    --p-stahl:#7FB0DE;
+    --p-ziegel:#E08A7E;
+    --p-schiefer:#A8B4AB;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Source Sans 3", system-ui, -apple-system, Segoe UI, sans-serif;
+    font-size:16px;
+    line-height:1.45;
+    -webkit-text-size-adjust:100%;
+  }
+  h1,h2,h3,.ui{font-family:"Archivo", system-ui, sans-serif}
+  button,input,select,textarea{font:inherit;color:inherit}
+  button{cursor:pointer}
+
+  /* ---------- Kopfleiste ---------- */
+  header{
+    position:sticky;
+    top:env(safe-area-inset-top, 0px);
+    z-index:20;
+    background:var(--bg);
+    border-bottom:1px solid var(--line);
+  }
+  .kopf{
+    max-width:1280px;margin:0 auto;
+    padding:10px 16px 0;
+    display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  }
+  .kopf h1{
+    font-size:19px;letter-spacing:-.01em;margin:0;font-weight:700;
+  }
+  .kopf .heute-datum{
+    color:var(--muted);font-size:14px;margin-left:auto;
+    font-variant-numeric:tabular-nums;
+  }
+  nav{
+    max-width:1280px;margin:0 auto;
+    padding:8px 16px 10px;
+    display:flex;gap:6px;align-items:center;flex-wrap:wrap;
+  }
+  .tab{
+    border:1px solid transparent;background:transparent;color:var(--muted);
+    padding:8px 14px;border-radius:999px;font-family:"Archivo",sans-serif;
+    font-weight:600;font-size:15px;min-height:40px;
+  }
+  .tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+  .tab:not([aria-selected="true"]):hover{background:var(--surface-2);color:var(--ink)}
+  .kopf-werkzeug{margin-left:auto;display:flex;gap:6px}
+  .icon-btn{
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;
+    min-height:40px;min-width:40px;padding:0 12px;color:var(--muted);
+    font-family:"Archivo",sans-serif;font-weight:600;font-size:14px;
+  }
+  .icon-btn:hover{color:var(--ink);border-color:var(--muted)}
+
+  main{max-width:1280px;margin:0 auto;padding-block:18px 120px;padding-left:16px;padding-right:16px}
+
+  .hinweis{
+    display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+    background:var(--accent-soft);border:1px solid var(--line);
+    border-radius:12px;padding:10px 14px;margin-bottom:16px;
+    font-size:14px;color:var(--ink);
+  }
+  .hinweis button{
+    background:transparent;border:1px solid var(--muted);border-radius:8px;
+    padding:5px 10px;font-size:13px;font-weight:600;font-family:"Archivo",sans-serif;
+  }
+
+  /* ---------- Abschnitte ---------- */
+  .abschnitt{margin-bottom:26px}
+  .abschnitt-kopf{
+    display:flex;align-items:baseline;gap:10px;margin-bottom:10px;
+  }
+  .abschnitt-kopf h2{
+    font-size:13px;text-transform:uppercase;letter-spacing:.09em;
+    color:var(--muted);margin:0;font-weight:600;
+  }
+  .abschnitt-kopf .zaehler{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+
+  .liste{display:flex;flex-direction:column;gap:8px}
+
+  /* ---------- Eintrag ---------- */
+  .eintrag{
+    display:grid;grid-template-columns:4px 62px 1fr;gap:0 12px;
+    align-items:start;
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:0;overflow:hidden;text-align:left;width:100%;
+    box-shadow:var(--shadow);
+  }
+  .eintrag:hover{border-color:var(--muted)}
+  .eintrag .streifen{background:var(--pf, var(--muted));align-self:stretch}
+  .eintrag .zeit{
+    padding:12px 0 12px 10px;font-variant-numeric:tabular-nums;
+    font-family:"Archivo",sans-serif;font-weight:600;font-size:15px;line-height:1.25;
+  }
+  .eintrag .zeit .bis{display:block;color:var(--muted);font-weight:500;font-size:13px}
+  .eintrag .text{padding:12px 12px 12px 0;min-width:0}
+  .eintrag .titel{font-weight:600;line-height:1.25;overflow-wrap:anywhere}
+  .eintrag .meta{color:var(--muted);font-size:13.5px;overflow-wrap:anywhere}
+  .eintrag .wer{color:var(--pf, var(--muted));font-weight:600}
+  .eintrag.erledigt{opacity:.5}
+
+  .daheim{
+    display:inline-block;margin-top:3px;font-size:13px;color:var(--muted);
+    font-variant-numeric:tabular-nums;
+  }
+  .daheim b{color:var(--ink);font-weight:600}
+
+  /* ---------- Wochenraster ---------- */
+  .wochenraster{display:grid;gap:10px;grid-template-columns:1fr}
+  @media (min-width:560px){.wochenraster{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (min-width:900px){.wochenraster{grid-template-columns:repeat(4,minmax(0,1fr))}}
+  @media (min-width:1220px){.wochenraster{grid-template-columns:repeat(7,minmax(0,1fr))}}
+  .tag{
+    background:var(--surface-2);border:1px solid var(--line);border-radius:14px;
+    padding:12px;display:flex;flex-direction:column;gap:8px;
+  }
+  .tag.ist-heute{border-color:var(--accent);background:var(--accent-soft)}
+  .tag h3{
+    margin:0;font-size:12px;text-transform:uppercase;letter-spacing:.04em;
+    color:var(--muted);font-weight:600;display:flex;justify-content:space-between;
+    gap:8px;white-space:nowrap;
+  }
+  .tag.ist-heute h3{color:var(--accent)}
+  /* In den schmalen Tagesspalten steht die Uhrzeit ueber dem Eintrag, nicht daneben. */
+  .tag .eintrag{box-shadow:none;grid-template-columns:4px 1fr;gap:0}
+  .tag .eintrag .streifen{grid-column:1;grid-row:1 / span 2}
+  .tag .eintrag .zeit{grid-column:2;grid-row:1;padding:10px 10px 0;font-size:14px}
+  .tag .eintrag .text{grid-column:2;grid-row:2}
+  .tag .eintrag .zeit .bis{display:inline;margin-left:6px;font-size:13px}
+  .tag .eintrag .text{padding:2px 10px 10px}
+
+  .leer{color:var(--muted);font-size:14px;font-style:italic;padding:2px 0}
+
+  /* ---------- Personen-Chips ---------- */
+  .personen-leiste{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .pchip{
+    display:inline-flex;align-items:center;gap:7px;
+    background:var(--surface);border:1px solid var(--line);border-radius:999px;
+    padding:6px 12px;font-size:14px;font-weight:600;min-height:36px;
+  }
+  .pchip[aria-pressed="false"]{opacity:.45}
+  .pchip .punkt{width:10px;height:10px;border-radius:50%;background:var(--pf);flex:none}
+
+  /* ---------- Knopf unten ---------- */
+  .neu{
+    position:fixed;right:16px;
+    bottom:calc(16px + env(safe-area-inset-bottom, 0px));
+    z-index:30;
+    background:var(--accent);color:var(--accent-ink);border:none;
+    border-radius:999px;padding:14px 22px;font-family:"Archivo",sans-serif;
+    font-weight:700;font-size:16px;box-shadow:0 8px 24px rgba(0,0,0,.22);
+    min-height:52px;
+  }
+
+  /* ---------- Formular-Fenster ---------- */
+  .schleier{
+    position:fixed;inset:0;z-index:40;background:rgba(10,14,12,.5);
+    display:flex;align-items:flex-end;justify-content:center;
+  }
+  @media (min-width:640px){.schleier{align-items:center}}
+  .blatt{
+    background:var(--surface);width:100%;max-width:560px;max-height:92vh;overflow-y:auto;
+    border-radius:18px 18px 0 0;border:1px solid var(--line);
+    padding:18px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+  }
+  @media (min-width:640px){.blatt{border-radius:18px}}
+  .blatt h2{margin:0 0 14px;font-size:19px}
+  .feld{margin-bottom:14px}
+  .feld > label{
+    display:block;font-size:13px;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--muted);font-weight:600;margin-bottom:5px;font-family:"Archivo",sans-serif;
+  }
+  input[type=text],input[type=time],input[type=date],select,textarea{
+    width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;
+    padding:11px 12px;min-height:46px;
+  }
+  textarea{min-height:70px;resize:vertical}
+  .zeile{display:flex;gap:10px}
+  .zeile > *{flex:1;min-width:0}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{
+    border:1px solid var(--line);background:var(--bg);border-radius:10px;
+    padding:9px 12px;font-weight:600;font-size:14px;min-height:44px;min-width:48px;
+    font-family:"Archivo",sans-serif;
+  }
+  .chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+  .blatt-fuss{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+  .knopf{
+    border-radius:10px;padding:12px 18px;font-family:"Archivo",sans-serif;
+    font-weight:700;font-size:15px;min-height:48px;border:1px solid var(--line);
+    background:var(--bg);
+  }
+  .knopf.haupt{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);flex:1}
+  .knopf.loeschen{color:var(--danger);border-color:var(--danger);margin-left:auto;background:transparent}
+
+  .personen-tabelle{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+  .preihe{display:flex;gap:8px;align-items:center}
+  .preihe input[type=text]{flex:1}
+  .preihe select{width:130px;flex:none}
+  .preihe .weg{
+    border:1px solid var(--line);background:var(--bg);border-radius:10px;
+    width:46px;min-height:46px;color:var(--danger);font-weight:700;flex:none;
+  }
+
+  /* ---------- Belohnungspunkte ---------- */
+  .punkte-kopf{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .pk-datum{font-weight:600;font-variant-numeric:tabular-nums}
+  .punkteraster{display:grid;gap:12px;grid-template-columns:1fr}
+  @media (min-width:720px){.punkteraster{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  .punktekarte{
+    background:var(--surface);border:1px solid var(--line);border-radius:16px;
+    padding:14px;box-shadow:var(--shadow);border-top:3px solid var(--pf);
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .pk-oben{display:flex;align-items:flex-start;gap:12px}
+  .pk-name{font-family:"Archivo",sans-serif;font-weight:700;font-size:18px;color:var(--pf)}
+  .pk-neben{color:var(--muted);font-size:13.5px;font-variant-numeric:tabular-nums}
+  .pk-stand{margin-left:auto;text-align:right;line-height:1}
+  .pk-stand span{
+    font-family:"Archivo",sans-serif;font-weight:700;font-size:34px;
+    font-variant-numeric:tabular-nums;display:block;
+  }
+  .pk-stand small{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+  .aufgabenliste{display:flex;flex-direction:column;gap:6px}
+  .aufgabe{
+    display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+    background:var(--bg);border:1px solid var(--line);border-radius:10px;
+    padding:10px 12px;min-height:48px;
+  }
+  .aufgabe .haken{
+    width:22px;height:22px;border-radius:6px;border:2px solid var(--muted);flex:none;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;
+  }
+  .aufgabe[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+  .aufgabe[aria-pressed="true"] .haken{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+  .aufgabe .a-name{flex:1;min-width:0;overflow-wrap:anywhere}
+  .aufgabe .a-punkte{
+    font-family:"Archivo",sans-serif;font-weight:700;color:var(--muted);
+    font-variant-numeric:tabular-nums;flex:none;
+  }
+  .aufgabe[aria-pressed="true"] .a-punkte{color:var(--accent)}
+  .buchungen{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--line);padding-top:10px}
+  .buchung{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
+  .buchung span:first-child{flex:1;min-width:0;overflow-wrap:anywhere}
+  .buchung .b-punkte{font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .buchung .b-weg{
+    background:transparent;border:none;color:var(--muted);font-size:18px;
+    line-height:1;padding:4px 6px;border-radius:6px;
+  }
+  .buchung .b-weg:hover{color:var(--danger)}
+  .pk-fuss{display:flex;gap:8px;flex-wrap:wrap}
+  .pk-fuss .knopf{flex:1;min-width:140px}
+  .belohnung{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left}
+  .belohnung[disabled]{opacity:.4}
+  .belohnung .b-kosten{
+    font-family:"Archivo",sans-serif;color:var(--muted);font-variant-numeric:tabular-nums;flex:none;
+  }
+  .preihe input.schmal{width:74px;flex:none;text-align:center;font-variant-numeric:tabular-nums}
+  .kasten{
+    display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);
+    margin:-2px 0 6px 2px;
+  }
+  .kasten input{width:20px;height:20px}
+
+  /* ---------- Erinnerung ---------- */
+  .merker{
+    display:inline-block;margin-top:3px;font-size:12.5px;color:var(--muted);
+    border:1px solid var(--line);border-radius:6px;padding:1px 6px;
+    font-family:"Archivo",sans-serif;font-weight:600;letter-spacing:.02em;
+  }
+  .alarm-stapel{
+    position:fixed;left:16px;right:16px;z-index:50;
+    top:calc(12px + env(safe-area-inset-top, 0px));
+    display:flex;flex-direction:column;gap:8px;align-items:center;
+  }
+  .alarm{
+    width:100%;max-width:520px;display:flex;gap:12px;align-items:center;
+    background:var(--accent);color:var(--accent-ink);border-radius:14px;
+    padding:14px 16px;box-shadow:0 10px 30px rgba(0,0,0,.3);
+  }
+  .alarm .a-text{flex:1;min-width:0}
+  .alarm .a-zeit{font-family:"Archivo",sans-serif;font-weight:700;font-variant-numeric:tabular-nums}
+  .alarm .a-titel{font-weight:600;overflow-wrap:anywhere}
+  .alarm .a-weg{
+    background:transparent;border:1px solid currentColor;color:inherit;
+    border-radius:8px;min-height:40px;padding:0 12px;font-weight:700;flex:none;
+  }
+
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media (prefers-reduced-motion:no-preference){
+    .blatt{animation:auf .16s ease-out}
+    @keyframes auf{from{transform:translateY(14px);opacity:.4}to{transform:none;opacity:1}}
+  }
+
+  /* ---------- Druck: sauber in Schwarz-Weiß ---------- */
+  @media print{
+    header,nav,.neu,.hinweis,.personen-leiste,.icon-btn{display:none !important}
+    body{background:#fff;color:#000;font-size:11pt}
+    main{padding:0;max-width:none}
+    .wochenraster{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+    .tag{background:#fff;border:1px solid #999;break-inside:avoid;page-break-inside:avoid}
+    .tag.ist-heute{background:#fff;border-color:#000}
+    .eintrag{border:1px solid #bbb;box-shadow:none;background:#fff}
+    .eintrag .streifen{background:#000}
+    .eintrag .wer{color:#000}
+    .druck-titel{display:block !important;font-size:15pt;margin-bottom:8px}
+  }
+  .druck-titel{display:none}
+
+  /* ---------- Anmeldefenster für den Familien-Code ---------- */
+  .tor{
+    position:fixed;inset:0;z-index:60;background:var(--bg);
+    display:flex;align-items:center;justify-content:center;padding:24px 16px;
+  }
+  .tor-karte{
+    width:100%;max-width:420px;background:var(--surface);
+    border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--shadow);
+  }
+  .tor-karte h2{margin:0 0 6px;font-size:22px}
+  .tor-karte p{margin:0 0 16px;color:var(--muted);font-size:14.5px}
+  .tor-fehler{color:var(--danger);font-weight:600;font-size:14px;margin-top:10px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kopf">
+    <h1>Familienplaner</h1>
+    <span class="heute-datum" id="heuteDatum"></span>
+  </div>
+  <nav>
+    <button class="tab ui" id="tabHeute" role="tab" aria-selected="true" data-tab="heute">Heute</button>
+    <button class="tab ui" id="tabWoche" role="tab" aria-selected="false" data-tab="woche">Woche</button>
+    <button class="tab ui" id="tabTermine" role="tab" aria-selected="false" data-tab="termine">Termine</button>
+    <button class="tab ui" id="tabPunkte" role="tab" aria-selected="false" data-tab="punkte">Punkte</button>
+    <span class="kopf-werkzeug">
+      <button class="icon-btn" id="btnErinnerung" title="Erinnerungen auf diesem Gerät einschalten" hidden>Erinnerungen</button>
+      <button class="icon-btn" id="btnDrucken" title="Wochenplan drucken">Drucken</button>
+      <button class="icon-btn" id="btnPersonen" title="Personen verwalten">Personen</button>
+    </span>
+  </nav>
+</header>
+
+<main>
+  <div class="hinweis" id="hinweis" hidden><span id="hinweisText"></span><button id="hinweisBtn" hidden></button></div>
+  <div class="personen-leiste" id="personenLeiste"></div>
+  <div class="druck-titel ui" id="druckTitel"></div>
+  <div id="inhalt"></div>
+</main>
+
+<div class="alarm-stapel" id="alarmStapel"></div>
+
+<button class="neu ui" id="btnNeu">+ Eintrag</button>
+
+<div class="tor" id="tor" hidden>
+  <div class="tor-karte">
+    <h2>Familienplaner</h2>
+    <p id="torText">Bitte einmalig den Familien-Code eingeben. Danach merkt sich dieses Gerät den Code.</p>
+    <div class="feld">
+      <label for="torCode">Familien-Code</label>
+      <input type="text" id="torCode" autocomplete="off" autocapitalize="off" spellcheck="false">
+    </div>
+    <div class="blatt-fuss">
+      <button class="knopf haupt" id="torOk">Öffnen</button>
+    </div>
+    <div class="tor-fehler" id="torFehler" hidden></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
+<script>
+/* =======================================================================
+   HIER DIE ZUGANGSDATEN AUS FIREBASE EINSETZEN
+
+   In der Firebase-Konsole unter  Projekteinstellungen -> Allgemein ->
+   Meine Apps  wird ein Block angezeigt, der so aussieht wie der hier
+   unten. Einfach die Werte in den Anführungszeichen übertragen.
+   Sonst nichts verändern.
+   ======================================================================= */
+var FIREBASE_KONFIG = {
+  apiKey: "AIzaSyAgWDhmi7u_CCd_VfbaVwyWha31BWno5BQ",
+  authDomain: "familienplaner-ae790.firebaseapp.com",
+  projectId: "familienplaner-ae790",
+  storageBucket: "familienplaner-ae790.firebasestorage.app",
+  messagingSenderId: "305760274366",
+  appId: "1:305760274366:web:a3985a8e6592bfd8bf9bef"
+};
+/* ===================== ENDE ZUGANGSDATEN ============================== */
+</script>
+
+<script>
+(function(){
+  "use strict";
+
+  var TAGE = ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];
+  var TAGE_KURZ = ["Mo","Di","Mi","Do","Fr","Sa","So"];
+  var ARTEN = ["Schule","Kindergarten","Musikschule","Nachhilfe","Sport","Arzt","Arbeit","Sonstiges"];
+  var FARBEN = [
+    {key:"pine",   name:"Grün"},
+    {key:"stahl",  name:"Blau"},
+    {key:"plum",   name:"Violett"},
+    {key:"ocker",  name:"Ocker"},
+    {key:"ziegel", name:"Rot"},
+    {key:"schiefer",name:"Grau"}
+  ];
+
+  var db = null;
+  var speicherBereit = false;
+  var state = {
+    tab: "heute",
+    personen: [],
+    wochenplan: [],
+    termine: [],
+    aufgaben: [],
+    belohnungen: [],
+    punkte: [],
+    filter: null,      // Person-Id oder null
+    vergangeneZeigen: false,
+    punkteDatum: null  // wird beim Zeichnen auf heute gesetzt
+  };
+
+  // ---------- Hilfen ----------
+  function el(id){ return document.getElementById(id); }
+  function pad(n){ return (n<10?"0":"")+n; }
+  function isoVon(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+  function heuteIso(){ return isoVon(new Date()); }
+  function tagIndexHeute(){ return (new Date().getDay()+6)%7; } // 0 = Montag
+  function datumLang(iso){
+    var t = iso.split("-");
+    var d = new Date(+t[0], +t[1]-1, +t[2]);
+    return TAGE_KURZ[(d.getDay()+6)%7]+", "+(+t[2])+"."+(+t[1])+"."+t[0];
+  }
+  function sortZeit(a,b){
+    var x=(a.von||"99:99"), y=(b.von||"99:99");
+    return x<y?-1:x>y?1:0;
+  }
+  function escape(s){
+    return String(s==null?"":s).replace(/[&<>"']/g,function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+  var ERINNERUNGEN = [
+    {min:0,   text:"keine Erinnerung"},
+    {min:15,  text:"15 Minuten vorher"},
+    {min:30,  text:"30 Minuten vorher"},
+    {min:60,  text:"1 Stunde vorher"},
+    {min:120, text:"2 Stunden vorher"},
+    {min:1440,text:"am Vortag um diese Zeit"}
+  ];
+  function erinnerungText(min){
+    for(var i=0;i<ERINNERUNGEN.length;i++) if(ERINNERUNGEN[i].min===min) return ERINNERUNGEN[i].text;
+    return min+" Minuten vorher";
+  }
+  function person(id){
+    for(var i=0;i<state.personen.length;i++) if(state.personen[i].id===id) return state.personen[i];
+    return null;
+  }
+  function farbVar(p){ return "var(--p-"+((p&&p.farbe)||"schiefer")+")"; }
+  function neueId(){
+    if(window.crypto && crypto.randomUUID) return crypto.randomUUID().replace(/-/g,"").slice(0,16);
+    return "x"+Math.random().toString(36).slice(2,12)+Date.now().toString(36);
+  }
+
+  // ---------- Speicher (geteilt über alle Geräte) ----------
+  function liste(name){ return state[name] || []; }
+  function lokalSetzen(name, arr){ state[name] = arr; }
+
+  function anlegen(name, daten){
+    if(db){
+      return db.collection(name).add(daten).catch(fehler);
+    }
+    var arr = liste(name).slice();
+    daten = Object.assign({id:neueId()}, daten);
+    arr.push(daten); lokalSetzen(name, arr); zeichne();
+    return Promise.resolve();
+  }
+  function speichern(name, id, daten){
+    if(db){
+      return db.collection(name).doc(id).set(daten).catch(fehler);
+    }
+    var gefunden = false;
+    var arr = liste(name).map(function(e){
+      if(e.id===id){ gefunden = true; return Object.assign({id:id}, daten); }
+      return e;
+    });
+    if(!gefunden) arr.push(Object.assign({id:id}, daten));
+    lokalSetzen(name, arr); zeichne();
+    return Promise.resolve();
+  }
+  function entfernen(name, id){
+    if(db){
+      return db.collection(name).doc(id).delete().catch(fehler);
+    }
+    lokalSetzen(name, liste(name).filter(function(e){ return e.id!==id; })); zeichne();
+    return Promise.resolve();
+  }
+  var hinweisArt = null;
+  function fehler(e){
+    var code = e && e.code;
+    if(code==="permission-denied"){
+      meldung("Ändern ist mit diesem Familien-Code nicht erlaubt.", null, null, "fehler");
+    } else {
+      meldung("Speichern hat nicht geklappt. Bitte nochmal versuchen.", null, null, "fehler");
+    }
+  }
+  function meldung(text, knopfText, aktion, art){
+    hinweisArt = art || "fehler";
+    el("hinweisText").textContent = text;
+    var b = el("hinweisBtn");
+    if(knopfText){ b.hidden=false; b.textContent=knopfText; b.onclick=aktion; }
+    else { b.hidden=true; b.onclick=null; }
+    el("hinweis").hidden = false;
+  }
+
+  function abonnieren(name){
+    db.collection(name).onSnapshot(function(snap){
+      var arr = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+      lokalSetzen(name, arr);
+      zeichne();
+    }, function(e){
+      if(e && e.code==="permission-denied"){
+        codeLoeschen();
+        torZeigen("Mit diesem Familien-Code geht es nicht auf. Bitte nochmal eingeben.");
+        return;
+      }
+      meldung("Die Verbindung zum Plan ist abgerissen. Bitte die Seite neu laden.", null, null, "fehler");
+    });
+  }
+
+  // ---------- Darstellung ----------
+  function sichtbar(e){ return !state.filter || e.personId===state.filter; }
+
+  function eintragHtml(e, opts){
+    opts = opts || {};
+    var p = person(e.personId);
+    var farbe = farbVar(p);
+    var zeit = e.von ? escape(e.von) : "—";
+    var bis = e.bis ? '<span class="bis">'+escape(e.bis)+'</span>' : "";
+    var meta = [];
+    if(p) meta.push('<span class="wer">'+escape(p.name)+'</span>');
+    if(e.art && e.art!=="Sonstiges") meta.push(escape(e.art));
+    if(e.ort) meta.push(escape(e.ort));
+    if(opts.datum && e.datum) meta.unshift(escape(datumLang(e.datum)));
+    var daheim = e.daheim ? '<span class="daheim">daheim um <b>'+escape(e.daheim)+'</b></span>' : "";
+    var notiz = e.notiz ? '<div class="meta">'+escape(e.notiz)+'</div>' : "";
+    if(e.erinnerungMin > 0 && e.von){
+      daheim += (daheim?" ":"")+'<span class="merker">Erinnerung '+erinnerungText(e.erinnerungMin)+'</span>';
+    }
+    return '<button class="eintrag" style="--pf:'+farbe+'" data-art="'+escape(e._quelle)+'" data-id="'+escape(e.id)+'">'
+      + '<span class="streifen"></span>'
+      + '<span class="zeit">'+zeit+bis+'</span>'
+      + '<span class="text">'
+        + '<span class="titel">'+escape(e.titel)+'</span>'
+        + '<div class="meta">'+meta.join(" · ")+'</div>'
+        + notiz + daheim
+      + '</span></button>';
+  }
+
+  function eintraegeFuerTag(tagIndex, iso){
+    var out = [];
+    state.wochenplan.forEach(function(e){
+      if(e.tag===tagIndex && sichtbar(e)) out.push(Object.assign({_quelle:"wochenplan"}, e));
+    });
+    if(iso){
+      state.termine.forEach(function(e){
+        if(e.datum===iso && sichtbar(e)) out.push(Object.assign({_quelle:"termine"}, e));
+      });
+    }
+    return out.sort(sortZeit);
+  }
+
+  function zeichneHeute(){
+    var heute = new Date();
+    var morgen = new Date(heute.getTime()+86400000);
+    var h = eintraegeFuerTag(tagIndexHeute(), isoVon(heute));
+    var m = eintraegeFuerTag((tagIndexHeute()+1)%7, isoVon(morgen));
+
+    var html = '<section class="abschnitt"><div class="abschnitt-kopf"><h2>Heute · '
+      + TAGE[tagIndexHeute()] + '</h2><span class="zaehler">'+h.length+'</span></div>'
+      + '<div class="liste">'
+      + (h.length ? h.map(function(e){return eintragHtml(e);}).join("")
+                  : '<p class="leer">Heute steht nichts im Plan.</p>')
+      + '</div></section>';
+
+    html += '<section class="abschnitt"><div class="abschnitt-kopf"><h2>Morgen · '
+      + TAGE[(tagIndexHeute()+1)%7] + '</h2><span class="zaehler">'+m.length+'</span></div>'
+      + '<div class="liste">'
+      + (m.length ? m.map(function(e){return eintragHtml(e);}).join("")
+                  : '<p class="leer">Morgen steht nichts im Plan.</p>')
+      + '</div></section>';
+
+    var naechste = state.termine.filter(function(e){
+      return sichtbar(e) && e.datum > isoVon(morgen);
+    }).sort(function(a,b){ return a.datum<b.datum?-1:a.datum>b.datum?1:sortZeit(a,b); }).slice(0,4);
+
+    if(naechste.length){
+      html += '<section class="abschnitt"><div class="abschnitt-kopf"><h2>Als Nächstes</h2></div><div class="liste">'
+        + naechste.map(function(e){ return eintragHtml(Object.assign({_quelle:"termine"},e), {datum:true}); }).join("")
+        + '</div></section>';
+    }
+    return html;
+  }
+
+  function zeichneWoche(){
+    var heuteIdx = tagIndexHeute();
+    var basis = new Date();
+    basis.setDate(basis.getDate()-heuteIdx); // Montag dieser Woche
+    var html = '<div class="wochenraster">';
+    for(var i=0;i<7;i++){
+      var d = new Date(basis.getTime()+i*86400000);
+      var eintraege = eintraegeFuerTag(i, isoVon(d));
+      html += '<div class="tag'+(i===heuteIdx?" ist-heute":"")+'">'
+        + '<h3><span>'+TAGE[i]+'</span><span>'+d.getDate()+"."+(d.getMonth()+1)+'.</span></h3>'
+        + (eintraege.length ? eintraege.map(function(e){return eintragHtml(e);}).join("")
+                            : '<p class="leer">frei</p>')
+        + '</div>';
+    }
+    return html + '</div>';
+  }
+
+  function zeichneTermine(){
+    var heute = heuteIso();
+    var alle = state.termine.filter(sichtbar).sort(function(a,b){
+      return a.datum<b.datum?-1:a.datum>b.datum?1:sortZeit(a,b);
+    });
+    var kommend = alle.filter(function(e){ return e.datum>=heute; });
+    var vergangen = alle.filter(function(e){ return e.datum<heute; }).reverse();
+
+    var gruppen = {}, reihenfolge = [];
+    kommend.forEach(function(e){
+      if(!gruppen[e.datum]){ gruppen[e.datum]=[]; reihenfolge.push(e.datum); }
+      gruppen[e.datum].push(e);
+    });
+
+    var html = '<section class="abschnitt"><div class="abschnitt-kopf"><h2>Kommende Termine</h2>'
+      + '<span class="zaehler">'+kommend.length+'</span></div>';
+    if(!kommend.length){
+      html += '<p class="leer">Keine Termine eingetragen.</p>';
+    }
+    reihenfolge.forEach(function(iso){
+      html += '<div class="abschnitt-kopf" style="margin-top:14px"><h2>'+escape(datumLang(iso))+'</h2></div>'
+        + '<div class="liste">'
+        + gruppen[iso].map(function(e){ return eintragHtml(Object.assign({_quelle:"termine"},e)); }).join("")
+        + '</div>';
+    });
+    html += '</section>';
+
+    if(vergangen.length){
+      html += '<section class="abschnitt"><div class="abschnitt-kopf">'
+        + '<h2>Vergangene Termine</h2><span class="zaehler">'+vergangen.length+'</span></div>';
+      if(state.vergangeneZeigen){
+        html += '<div class="liste">'
+          + vergangen.map(function(e){
+              var k = eintragHtml(Object.assign({_quelle:"termine"},e), {datum:true});
+              return k.replace('class="eintrag"','class="eintrag erledigt"');
+            }).join("")
+          + '</div>';
+      }
+      html += '<button class="knopf" id="btnVergangene" style="margin-top:8px">'
+        + (state.vergangeneZeigen?"Vergangene ausblenden":"Vergangene anzeigen")+'</button></section>';
+    }
+    return html;
+  }
+
+  // ---------- Belohnungspunkte ----------
+  function punkteDokId(pid, datum){ return pid+"_"+datum.slice(0,7); }
+  function punkteDok(pid, datum){
+    var id = punkteDokId(pid, datum);
+    for(var i=0;i<state.punkte.length;i++) if(state.punkte[i].id===id) return state.punkte[i];
+    return null;
+  }
+  function punkteKinder(){
+    return state.personen.filter(function(p){ return p.sammelt; });
+  }
+  function aufgabenFuer(pid){
+    return state.aufgaben.filter(function(a){ return !a.personId || a.personId===pid; });
+  }
+  function erledigtAm(pid, datum){
+    var d = punkteDok(pid, datum);
+    return (d && d.tage && d.tage[datum]) ? d.tage[datum] : {};
+  }
+  function standVon(pid){
+    var summe = 0;
+    state.punkte.forEach(function(d){
+      if(d.personId!==pid) return;
+      Object.keys(d.tage||{}).forEach(function(tag){
+        var e = d.tage[tag] || {};
+        Object.keys(e).forEach(function(k){ summe += (+e[k] || 0); });
+      });
+      (d.buchungen||[]).forEach(function(b){ summe += (+b.punkte || 0); });
+    });
+    return summe;
+  }
+  function standSeit(pid, abIso){
+    var summe = 0;
+    state.punkte.forEach(function(d){
+      if(d.personId!==pid) return;
+      Object.keys(d.tage||{}).forEach(function(tag){
+        if(tag < abIso) return;
+        var e = d.tage[tag] || {};
+        Object.keys(e).forEach(function(k){ summe += (+e[k] || 0); });
+      });
+      (d.buchungen||[]).forEach(function(b){ if(b.datum >= abIso) summe += (+b.punkte || 0); });
+    });
+    return summe;
+  }
+  function punkteSchreiben(pid, datum, aendern){
+    var id = punkteDokId(pid, datum);
+    var vorhanden = punkteDok(pid, datum);
+    var dok = vorhanden
+      ? JSON.parse(JSON.stringify(vorhanden))
+      : {personId:pid, monat:datum.slice(0,7), tage:{}, buchungen:[]};
+    delete dok.id;
+    dok.tage = dok.tage || {};
+    dok.buchungen = dok.buchungen || [];
+    aendern(dok);
+    return speichern("punkte", id, dok);
+  }
+  function aufgabeUmschalten(pid, datum, aufgabe){
+    punkteSchreiben(pid, datum, function(dok){
+      var tag = Object.assign({}, dok.tage[datum]);
+      if(tag[aufgabe.id] !== undefined) delete tag[aufgabe.id];
+      else tag[aufgabe.id] = +aufgabe.punkte || 0;
+      dok.tage[datum] = tag;
+    });
+  }
+  function buchen(pid, datum, titel, punkte, art){
+    punkteSchreiben(pid, datum, function(dok){
+      dok.buchungen = dok.buchungen.concat([{
+        id: neueId(), datum: datum, titel: titel, punkte: punkte, art: art
+      }]);
+    });
+  }
+  function buchungLoeschen(pid, datum, buchungId){
+    punkteSchreiben(pid, datum, function(dok){
+      dok.buchungen = dok.buchungen.filter(function(b){ return b.id!==buchungId; });
+    });
+  }
+  function letzteBuchungen(pid, anzahl){
+    var alle = [];
+    state.punkte.forEach(function(d){
+      if(d.personId!==pid) return;
+      (d.buchungen||[]).forEach(function(b){ alle.push(b); });
+    });
+    alle.sort(function(a,b){ return a.datum<b.datum?1:a.datum>b.datum?-1:0; });
+    return alle.slice(0, anzahl);
+  }
+  function wochenStartIso(){
+    var d = new Date();
+    d.setDate(d.getDate() - ((d.getDay()+6)%7));
+    return isoVon(d);
+  }
+
+  function zeichnePunkte(){
+    var datum = state.punkteDatum || heuteIso();
+    var kinder = punkteKinder();
+    var kopf = '<section class="abschnitt"><div class="punkte-kopf">'
+      + '<button class="icon-btn" id="pkTagZurueck" aria-label="Tag zurück">‹</button>'
+      + '<span class="pk-datum ui">'+escape(datumLang(datum))+(datum===heuteIso()?" · heute":"")+'</span>'
+      + '<button class="icon-btn" id="pkTagVor" aria-label="Tag vor">›</button>'
+      + '<button class="icon-btn" id="pkEinstellungen" style="margin-left:auto">Aufgaben &amp; Belohnungen</button>'
+      + '</div></section>';
+
+    if(!kinder.length){
+      return kopf + '<p class="leer">Noch sammelt niemand Punkte. Unter <b>Personen</b> bei einem Kind '
+        + '„sammelt Belohnungspunkte" anhaken.</p>';
+    }
+
+    var karten = kinder.map(function(p){
+      var stand = standVon(p.id);
+      var woche = standSeit(p.id, wochenStartIso());
+      var erledigt = erledigtAm(p.id, datum);
+      var aufgaben = aufgabenFuer(p.id);
+      var heuteSumme = 0;
+      Object.keys(erledigt).forEach(function(k){ heuteSumme += (+erledigt[k]||0); });
+
+      var aufgabenHtml = aufgaben.length
+        ? aufgaben.map(function(a){
+            var an = erledigt[a.id] !== undefined;
+            return '<button class="aufgabe" data-pid="'+escape(p.id)+'" data-aid="'+escape(a.id)+'" aria-pressed="'+an+'">'
+              + '<span class="haken" aria-hidden="true">'+(an?"✓":"")+'</span>'
+              + '<span class="a-name">'+escape(a.titel)+'</span>'
+              + '<span class="a-punkte">'+(a.punkte>=0?"+":"")+escape(a.punkte)+'</span>'
+              + '</button>';
+          }).join("")
+        : '<p class="leer">Noch keine Aufgaben angelegt.</p>';
+
+      var buchungen = letzteBuchungen(p.id, 3).map(function(b){
+        return '<div class="buchung"><span>'+escape(b.titel)+'</span>'
+          + '<span class="b-punkte">'+(b.punkte>0?"+":"")+escape(b.punkte)+'</span>'
+          + '<button class="b-weg" data-pid="'+escape(p.id)+'" data-bdatum="'+escape(b.datum)+'" '
+          + 'data-bid="'+escape(b.id)+'" aria-label="Buchung zurücknehmen">×</button></div>';
+      }).join("");
+
+      return '<div class="punktekarte" style="--pf:'+farbVar(p)+'">'
+        + '<div class="pk-oben">'
+          + '<div><div class="pk-name">'+escape(p.name)+'</div>'
+          + '<div class="pk-neben">diese Woche '+(woche>=0?"+":"")+woche+' · heute '+(heuteSumme>=0?"+":"")+heuteSumme+'</div></div>'
+          + '<div class="pk-stand"><span>'+stand+'</span><small>Punkte</small></div>'
+        + '</div>'
+        + '<div class="aufgabenliste">'+aufgabenHtml+'</div>'
+        + (buchungen ? '<div class="buchungen">'+buchungen+'</div>' : "")
+        + '<div class="pk-fuss">'
+          + '<button class="knopf" data-einloesen="'+escape(p.id)+'">Belohnung einlösen</button>'
+          + '<button class="knopf" data-bonus="'+escape(p.id)+'">Extra-Punkte</button>'
+        + '</div>'
+        + '</div>';
+    }).join("");
+
+    return kopf + '<div class="punkteraster">'+karten+'</div>';
+  }
+
+  function zeichnePersonenLeiste(){
+    var box = el("personenLeiste");
+    if(!state.personen.length){ box.innerHTML=""; return; }
+    box.innerHTML = state.personen.map(function(p){
+      var an = !state.filter || state.filter===p.id;
+      return '<button class="pchip" style="--pf:'+farbVar(p)+'" data-pid="'+escape(p.id)+'" aria-pressed="'+an+'">'
+        + '<span class="punkt"></span>'+escape(p.name)+'</button>';
+    }).join("");
+  }
+
+  function zeichne(){
+    var heute = new Date();
+    el("heuteDatum").textContent = TAGE[tagIndexHeute()]+", "+heute.getDate()+"."+(heute.getMonth()+1)+"."+heute.getFullYear();
+    el("druckTitel").textContent = "Familienplaner – Woche ab "+datumLang(isoVon(new Date(heute.getTime()-tagIndexHeute()*86400000)));
+
+    ["heute","woche","termine","punkte"].forEach(function(t){
+      el("tab"+t.charAt(0).toUpperCase()+t.slice(1)).setAttribute("aria-selected", String(state.tab===t));
+    });
+    zeichnePersonenLeiste();
+    el("personenLeiste").hidden = (state.tab==="punkte");
+    el("btnNeu").hidden = (state.tab==="punkte");
+    el("inhalt").innerHTML =
+      state.tab==="heute" ? zeichneHeute() :
+      state.tab==="woche" ? zeichneWoche() :
+      state.tab==="punkte" ? zeichnePunkte() : zeichneTermine();
+
+    var bv = el("btnVergangene");
+    if(bv) bv.onclick = function(){ state.vergangeneZeigen = !state.vergangeneZeigen; zeichne(); };
+
+    if(verbunden && !state.personen.length && hinweisArt!=="fehler"){
+      meldung("Zuerst eintragen, wer zur Familie gehört.", "Personen anlegen", personenFormular, "start");
+    } else if(hinweisArt==="start" && state.personen.length){
+      el("hinweis").hidden = true; hinweisArt = null;
+    }
+
+    if(state.tab==="punkte"){
+      var tagVerschieben = function(richtung){
+        var t = (state.punkteDatum || heuteIso()).split("-");
+        var d = new Date(+t[0], +t[1]-1, +t[2]);
+        d.setDate(d.getDate()+richtung);
+        state.punkteDatum = isoVon(d);
+        zeichne();
+      };
+      var bz = el("pkTagZurueck"), bvor = el("pkTagVor"), be = el("pkEinstellungen");
+      if(bz) bz.onclick = function(){ tagVerschieben(-1); };
+      if(bvor) bvor.onclick = function(){ tagVerschieben(1); };
+      if(be) be.onclick = aufgabenFormular;
+    }
+  }
+
+  // ---------- Formular ----------
+  var offenesBlatt = null;
+  function blattSchliessen(){
+    if(offenesBlatt){ offenesBlatt.remove(); offenesBlatt=null; }
+  }
+  function blattOeffnen(html){
+    blattSchliessen();
+    var s = document.createElement("div");
+    s.className = "schleier";
+    s.innerHTML = '<div class="blatt" role="dialog" aria-modal="true">'+html+'</div>';
+    s.addEventListener("click", function(ev){ if(ev.target===s) blattSchliessen(); });
+    document.body.appendChild(s);
+    offenesBlatt = s;
+    return s.querySelector(".blatt");
+  }
+  document.addEventListener("keydown", function(e){ if(e.key==="Escape") blattSchliessen(); });
+
+  function personOptionen(gewaehlt){
+    return state.personen.map(function(p){
+      return '<option value="'+escape(p.id)+'"'+(p.id===gewaehlt?" selected":"")+'>'+escape(p.name)+'</option>';
+    }).join("");
+  }
+
+  function eintragFormular(quelle, id){
+    if(!state.personen.length){ personenFormular(); return; }
+    var vorhanden = null;
+    if(id){
+      var arr = quelle==="wochenplan" ? state.wochenplan : state.termine;
+      for(var i=0;i<arr.length;i++) if(arr[i].id===id) vorhanden = arr[i];
+    }
+    var e = vorhanden || {};
+    var istWoche = vorhanden ? quelle==="wochenplan" : true;
+    var gewaehlteTage = vorhanden && quelle==="wochenplan" ? [e.tag] : [tagIndexHeute()];
+
+    var b = blattOeffnen(
+      '<h2>'+(vorhanden?"Eintrag ändern":"Neuer Eintrag")+'</h2>'
+      + '<div class="feld"><label for="fTyp">Was für ein Eintrag</label>'
+        + '<select id="fTyp"'+(vorhanden?" disabled":"")+'>'
+          + '<option value="wochenplan"'+(istWoche?" selected":"")+'>Jede Woche gleich (z. B. Schule, Musikstunde)</option>'
+          + '<option value="termine"'+(!istWoche?" selected":"")+'>Einzelner Termin (z. B. Arzt)</option>'
+        + '</select></div>'
+      + '<div class="feld"><label for="fPerson">Wer</label><select id="fPerson">'+personOptionen(e.personId)+'</select></div>'
+      + '<div class="feld"><label for="fTitel">Was</label>'
+        + '<input type="text" id="fTitel" value="'+escape(e.titel||"")+'" placeholder="z. B. Schule, Gitarre, Dr. Berger"></div>'
+      + '<div class="feld"><label for="fArt">Kategorie</label><select id="fArt">'
+        + ARTEN.map(function(a){ return '<option'+(a===(e.art||"Schule")?" selected":"")+'>'+a+'</option>'; }).join("")
+        + '</select></div>'
+      + '<div class="feld" id="feldTage"><label>An welchen Tagen</label><div class="chips" id="fTage">'
+        + TAGE_KURZ.map(function(t,i){
+            return '<button type="button" class="chip" data-tag="'+i+'" aria-pressed="'
+              + (gewaehlteTage.indexOf(i)>=0) + '">'+t+'</button>';
+          }).join("")
+        + '</div></div>'
+      + '<div class="feld" id="feldDatum" hidden><label for="fDatum">Datum</label>'
+        + '<input type="date" id="fDatum" value="'+escape(e.datum||heuteIso())+'"></div>'
+      + '<div class="feld"><label>Uhrzeit</label><div class="zeile">'
+        + '<input type="time" id="fVon" value="'+escape(e.von||"")+'" aria-label="von">'
+        + '<input type="time" id="fBis" value="'+escape(e.bis||"")+'" aria-label="bis">'
+        + '</div></div>'
+      + '<div class="feld"><label for="fErinnerung">Erinnerung</label><select id="fErinnerung">'
+        + ERINNERUNGEN.map(function(r){
+            return '<option value="'+r.min+'"'+(r.min===(e.erinnerungMin||0)?" selected":"")+'>'+r.text+'</option>';
+          }).join("")
+        + '</select></div>'
+      + '<div class="feld"><label for="fDaheim">Zu Hause um (wenn wichtig)</label>'
+        + '<input type="time" id="fDaheim" value="'+escape(e.daheim||"")+'"></div>'
+      + '<div class="feld"><label for="fOrt">Wo</label>'
+        + '<input type="text" id="fOrt" value="'+escape(e.ort||"")+'" placeholder="z. B. Musikschule Mittersill"></div>'
+      + '<div class="feld"><label for="fNotiz">Notiz</label>'
+        + '<textarea id="fNotiz" placeholder="z. B. Bus 9:20, E-Card mitnehmen">'+escape(e.notiz||"")+'</textarea></div>'
+      + '<div class="blatt-fuss">'
+        + '<button class="knopf haupt" id="fSpeichern">Speichern</button>'
+        + '<button class="knopf" id="fAbbrechen">Abbrechen</button>'
+        + (vorhanden?'<button class="knopf loeschen" id="fLoeschen">Löschen</button>':"")
+      + '</div>'
+    );
+
+    function typUmschalten(){
+      var woche = b.querySelector("#fTyp").value==="wochenplan";
+      b.querySelector("#feldTage").hidden = !woche;
+      b.querySelector("#feldDatum").hidden = woche;
+    }
+    b.querySelector("#fTyp").addEventListener("change", typUmschalten);
+    typUmschalten();
+
+    b.querySelector("#fTage").addEventListener("click", function(ev){
+      var c = ev.target.closest(".chip"); if(!c) return;
+      if(vorhanden){
+        Array.prototype.forEach.call(b.querySelectorAll("#fTage .chip"), function(x){
+          x.setAttribute("aria-pressed","false");
+        });
+        c.setAttribute("aria-pressed","true");
+      } else {
+        c.setAttribute("aria-pressed", c.getAttribute("aria-pressed")==="true" ? "false":"true");
+      }
+    });
+
+    b.querySelector("#fAbbrechen").addEventListener("click", blattSchliessen);
+    if(vorhanden){
+      b.querySelector("#fLoeschen").addEventListener("click", function(){
+        entfernen(quelle, id); blattSchliessen();
+      });
+    }
+
+    b.querySelector("#fSpeichern").addEventListener("click", function(){
+      var typ = b.querySelector("#fTyp").value;
+      var titel = b.querySelector("#fTitel").value.trim();
+      if(!titel){ b.querySelector("#fTitel").focus(); return; }
+      var daten = {
+        personId: b.querySelector("#fPerson").value,
+        titel: titel,
+        art: b.querySelector("#fArt").value,
+        von: b.querySelector("#fVon").value,
+        bis: b.querySelector("#fBis").value,
+        daheim: b.querySelector("#fDaheim").value,
+        erinnerungMin: +b.querySelector("#fErinnerung").value || 0,
+        ort: b.querySelector("#fOrt").value.trim(),
+        notiz: b.querySelector("#fNotiz").value.trim()
+      };
+      if(typ==="wochenplan"){
+        var tage = Array.prototype.filter.call(b.querySelectorAll("#fTage .chip"), function(c){
+          return c.getAttribute("aria-pressed")==="true";
+        }).map(function(c){ return +c.dataset.tag; });
+        if(!tage.length){ return; }
+        if(vorhanden){ speichern("wochenplan", id, Object.assign({tag:tage[0]}, daten)); }
+        else { tage.forEach(function(t){ anlegen("wochenplan", Object.assign({tag:t}, daten)); }); }
+      } else {
+        daten.datum = b.querySelector("#fDatum").value || heuteIso();
+        if(vorhanden) speichern("termine", id, daten); else anlegen("termine", daten);
+      }
+      blattSchliessen();
+    });
+  }
+
+  function personenFormular(){
+    var b = blattOeffnen(
+      '<h2>Wer gehört zur Familie</h2>'
+      + '<div class="personen-tabelle" id="pTabelle"></div>'
+      + '<button class="knopf" id="pNeu">+ Person hinzufügen</button>'
+      + '<div class="blatt-fuss"><button class="knopf haupt" id="pFertig">Fertig</button></div>'
+    );
+    var entwurf = state.personen.map(function(p){
+      return {id:p.id, name:p.name, farbe:p.farbe, sammelt:!!p.sammelt};
+    });
+    if(!entwurf.length) entwurf.push({id:null, name:"", farbe:"pine", sammelt:false});
+
+    function zeichnePersonen(){
+      b.querySelector("#pTabelle").innerHTML = entwurf.map(function(p,i){
+        return '<div class="preihe" style="--pf:'+farbVar(p)+'">'
+          + '<input type="text" value="'+escape(p.name)+'" data-i="'+i+'" data-feld="name" placeholder="Name" aria-label="Name">'
+          + '<select data-i="'+i+'" data-feld="farbe" aria-label="Farbe">'
+            + FARBEN.map(function(f){
+                return '<option value="'+f.key+'"'+(f.key===p.farbe?" selected":"")+'>'+f.name+'</option>';
+              }).join("")
+          + '</select>'
+          + '<button class="weg" data-weg="'+i+'" aria-label="Person entfernen">×</button>'
+          + '</div>'
+          + '<label class="kasten"><input type="checkbox" data-i="'+i+'" data-feld="sammelt"'
+          + (p.sammelt?" checked":"")+'> sammelt Belohnungspunkte</label>';
+      }).join("");
+    }
+    zeichnePersonen();
+
+    b.querySelector("#pTabelle").addEventListener("input", function(ev){
+      var t = ev.target; if(t.dataset.i===undefined) return;
+      entwurf[+t.dataset.i][t.dataset.feld] = (t.type==="checkbox") ? t.checked : t.value;
+    });
+    b.querySelector("#pTabelle").addEventListener("change", function(ev){
+      var t = ev.target;
+      if(t.dataset.feld==="farbe"){ entwurf[+t.dataset.i].farbe = t.value; zeichnePersonen(); }
+    });
+    b.querySelector("#pTabelle").addEventListener("click", function(ev){
+      var w = ev.target.closest("[data-weg]"); if(!w) return;
+      entwurf.splice(+w.dataset.weg,1); zeichnePersonen();
+    });
+    b.querySelector("#pNeu").addEventListener("click", function(){
+      entwurf.push({id:null, name:"", farbe:FARBEN[entwurf.length % FARBEN.length].key});
+      zeichnePersonen();
+    });
+
+    b.querySelector("#pFertig").addEventListener("click", function(){
+      var behalten = {};
+      var bisher = state.personen.slice();
+      entwurf.forEach(function(p){
+        var name = (p.name||"").trim();
+        if(!name) return;
+        var daten = {name:name, farbe:p.farbe, sammelt:!!p.sammelt};
+        if(p.id){ behalten[p.id]=true; speichern("personen", p.id, daten); }
+        else { anlegen("personen", daten); }
+      });
+      bisher.forEach(function(p){
+        if(!behalten[p.id]) entfernen("personen", p.id);
+      });
+      blattSchliessen();
+    });
+  }
+
+  function einloesenFormular(pid, datum){
+    var p = person(pid);
+    var stand = standVon(pid);
+    var passend = state.belohnungen.filter(function(b){ return !b.personId || b.personId===pid; });
+    var b = blattOeffnen(
+      '<h2>Belohnung für '+escape(p?p.name:"")+'</h2>'
+      + '<p class="pk-neben" style="margin:-6px 0 14px">Aktueller Stand: <b>'+stand+' Punkte</b></p>'
+      + (passend.length
+          ? '<div class="personen-tabelle">'
+            + passend.map(function(x){
+                var reicht = stand >= (+x.kosten||0);
+                return '<button class="knopf belohnung" data-bid="'+escape(x.id)+'"'+(reicht?"":" disabled")+'>'
+                  + '<span>'+escape(x.titel)+'</span><span class="b-kosten">'+escape(x.kosten)+' Punkte</span></button>';
+              }).join("")
+            + '</div>'
+          : '<p class="leer">Noch keine Belohnungen angelegt – unter „Aufgaben &amp; Belohnungen".</p>')
+      + '<div class="blatt-fuss"><button class="knopf haupt" id="bAbbrechen">Schließen</button></div>'
+    );
+    b.querySelector("#bAbbrechen").addEventListener("click", blattSchliessen);
+    b.addEventListener("click", function(ev){
+      var k = ev.target.closest(".belohnung"); if(!k || k.disabled) return;
+      var gewaehlt = null;
+      state.belohnungen.forEach(function(x){ if(x.id===k.dataset.bid) gewaehlt = x; });
+      if(!gewaehlt) return;
+      buchen(pid, datum, "Eingelöst: "+gewaehlt.titel, -(+gewaehlt.kosten||0), "einloesen");
+      blattSchliessen();
+    });
+  }
+
+  function bonusFormular(pid, datum){
+    var p = person(pid);
+    var b = blattOeffnen(
+      '<h2>Extra-Punkte für '+escape(p?p.name:"")+'</h2>'
+      + '<div class="feld"><label for="boGrund">Wofür</label>'
+        + '<input type="text" id="boGrund" placeholder="z. B. Auto waschen geholfen"></div>'
+      + '<div class="feld"><label for="boPunkte">Punkte</label>'
+        + '<input type="text" id="boPunkte" inputmode="numeric" value="5"></div>'
+      + '<div class="blatt-fuss">'
+        + '<button class="knopf haupt" id="boPlus">Gutschreiben</button>'
+        + '<button class="knopf" id="boMinus">Abziehen</button>'
+        + '<button class="knopf" id="boAbbrechen">Abbrechen</button>'
+      + '</div>'
+    );
+    function fertig(vorzeichen){
+      var wert = Math.abs(parseInt(b.querySelector("#boPunkte").value, 10) || 0);
+      if(!wert) return;
+      var grund = b.querySelector("#boGrund").value.trim() || (vorzeichen>0 ? "Extra-Punkte" : "Abzug");
+      buchen(pid, datum, grund, vorzeichen*wert, vorzeichen>0 ? "bonus" : "abzug");
+      blattSchliessen();
+    }
+    b.querySelector("#boPlus").addEventListener("click", function(){ fertig(1); });
+    b.querySelector("#boMinus").addEventListener("click", function(){ fertig(-1); });
+    b.querySelector("#boAbbrechen").addEventListener("click", blattSchliessen);
+  }
+
+  function aufgabenFormular(){
+    var b = blattOeffnen(
+      '<h2>Aufgaben &amp; Belohnungen</h2>'
+      + '<div class="feld"><label>Aufgaben – wofür es Punkte gibt</label>'
+        + '<div class="personen-tabelle" id="aTabelle"></div>'
+        + '<button class="knopf" id="aNeu">+ Aufgabe</button></div>'
+      + '<div class="feld" style="margin-top:20px"><label>Belohnungen – wofür Punkte ausgegeben werden</label>'
+        + '<div class="personen-tabelle" id="rTabelle"></div>'
+        + '<button class="knopf" id="rNeu">+ Belohnung</button></div>'
+      + '<div class="blatt-fuss"><button class="knopf haupt" id="abFertig">Fertig</button></div>'
+    );
+    var kinder = punkteKinder();
+    var aufgaben = state.aufgaben.map(function(a){
+      return {id:a.id, titel:a.titel, punkte:a.punkte, personId:a.personId||""};
+    });
+    var belohnungen = state.belohnungen.map(function(r){
+      return {id:r.id, titel:r.titel, kosten:r.kosten, personId:r.personId||""};
+    });
+    if(!aufgaben.length) aufgaben.push({id:null, titel:"", punkte:2, personId:""});
+    if(!belohnungen.length) belohnungen.push({id:null, titel:"", kosten:50, personId:""});
+
+    function wahl(gewaehlt){
+      return '<option value="">alle</option>' + kinder.map(function(p){
+        return '<option value="'+escape(p.id)+'"'+(p.id===gewaehlt?" selected":"")+'>'+escape(p.name)+'</option>';
+      }).join("");
+    }
+    function zeichneListen(){
+      b.querySelector("#aTabelle").innerHTML = aufgaben.map(function(a,i){
+        return '<div class="preihe">'
+          + '<input type="text" value="'+escape(a.titel)+'" data-liste="a" data-i="'+i+'" data-feld="titel" placeholder="z. B. Zimmer aufräumen" aria-label="Aufgabe">'
+          + '<input type="text" class="schmal" inputmode="numeric" value="'+escape(a.punkte)+'" data-liste="a" data-i="'+i+'" data-feld="punkte" aria-label="Punkte">'
+          + '<select data-liste="a" data-i="'+i+'" data-feld="personId" aria-label="für wen">'+wahl(a.personId)+'</select>'
+          + '<button class="weg" data-weg="a" data-i="'+i+'" aria-label="Aufgabe entfernen">×</button></div>';
+      }).join("");
+      b.querySelector("#rTabelle").innerHTML = belohnungen.map(function(r,i){
+        return '<div class="preihe">'
+          + '<input type="text" value="'+escape(r.titel)+'" data-liste="r" data-i="'+i+'" data-feld="titel" placeholder="z. B. Kino" aria-label="Belohnung">'
+          + '<input type="text" class="schmal" inputmode="numeric" value="'+escape(r.kosten)+'" data-liste="r" data-i="'+i+'" data-feld="kosten" aria-label="Kosten in Punkten">'
+          + '<select data-liste="r" data-i="'+i+'" data-feld="personId" aria-label="für wen">'+wahl(r.personId)+'</select>'
+          + '<button class="weg" data-weg="r" data-i="'+i+'" aria-label="Belohnung entfernen">×</button></div>';
+      }).join("");
+    }
+    zeichneListen();
+
+    function ziel(t){ return t.dataset.liste==="a" ? aufgaben : belohnungen; }
+    b.addEventListener("input", function(ev){
+      var t = ev.target; if(!t.dataset || !t.dataset.liste) return;
+      ziel(t)[+t.dataset.i][t.dataset.feld] = t.value;
+    });
+    b.addEventListener("change", function(ev){
+      var t = ev.target; if(!t.dataset || !t.dataset.liste || t.dataset.feld!=="personId") return;
+      ziel(t)[+t.dataset.i].personId = t.value;
+    });
+    b.addEventListener("click", function(ev){
+      var w = ev.target.closest("[data-weg]"); if(!w) return;
+      (w.dataset.weg==="a" ? aufgaben : belohnungen).splice(+w.dataset.i, 1);
+      zeichneListen();
+    });
+    b.querySelector("#aNeu").addEventListener("click", function(){
+      aufgaben.push({id:null, titel:"", punkte:2, personId:""}); zeichneListen();
+    });
+    b.querySelector("#rNeu").addEventListener("click", function(){
+      belohnungen.push({id:null, titel:"", kosten:50, personId:""}); zeichneListen();
+    });
+
+    b.querySelector("#abFertig").addEventListener("click", function(){
+      var behaltenA = {}, behaltenR = {};
+      var bisherA = state.aufgaben.slice(), bisherR = state.belohnungen.slice();
+      aufgaben.forEach(function(a){
+        var titel = (a.titel||"").trim(); if(!titel) return;
+        var daten = {titel:titel, punkte: parseInt(a.punkte,10)||0, personId:a.personId||""};
+        if(a.id){ behaltenA[a.id]=true; speichern("aufgaben", a.id, daten); }
+        else anlegen("aufgaben", daten);
+      });
+      bisherA.forEach(function(a){ if(!behaltenA[a.id]) entfernen("aufgaben", a.id); });
+
+      belohnungen.forEach(function(r){
+        var titel = (r.titel||"").trim(); if(!titel) return;
+        var daten = {titel:titel, kosten: parseInt(r.kosten,10)||0, personId:r.personId||""};
+        if(r.id){ behaltenR[r.id]=true; speichern("belohnungen", r.id, daten); }
+        else anlegen("belohnungen", daten);
+      });
+      bisherR.forEach(function(r){ if(!behaltenR[r.id]) entfernen("belohnungen", r.id); });
+      blattSchliessen();
+    });
+  }
+
+  // ---------- Erinnerungen ----------
+  var gefeuert = {};
+  try{ gefeuert = JSON.parse(localStorage.getItem("fp_erinnert") || "{}") || {}; }catch(_){ gefeuert = {}; }
+
+  function merkeGefeuert(key){
+    gefeuert[key] = 1;
+    try{
+      var heute = heuteIso(), sauber = {};
+      Object.keys(gefeuert).forEach(function(k){ if(k.slice(0,10) >= heute) sauber[k] = 1; });
+      gefeuert = sauber;
+      localStorage.setItem("fp_erinnert", JSON.stringify(gefeuert));
+    }catch(_){}
+  }
+  function zeitAmTag(iso, hhmm){
+    var t = iso.split("-"), u = hhmm.split(":");
+    return new Date(+t[0], +t[1]-1, +t[2], +u[0], +u[1], 0, 0);
+  }
+  function alarmZeigen(e, start){
+    var p = person(e.personId);
+    var text = (p ? p.name+": " : "") + e.titel + (e.ort ? " ("+e.ort+")" : "");
+    var zeit = e.von;
+    try{
+      if(window.Notification && Notification.permission === "granted"){
+        new Notification("Um "+zeit+": "+e.titel, { body: text, tag: "fp-"+e.id });
+      }
+    }catch(_){}
+    var d = document.createElement("div");
+    d.className = "alarm";
+    d.innerHTML = '<span class="a-text"><span class="a-zeit">'+escape(zeit)+'</span> · '
+      + '<span class="a-titel">'+escape(text)+'</span></span>'
+      + '<button class="a-weg">OK</button>';
+    d.querySelector(".a-weg").addEventListener("click", function(){ d.remove(); });
+    el("alarmStapel").appendChild(d);
+  }
+  function pruefeErinnerungen(){
+    var jetzt = new Date();
+    var kandidaten = [];
+    [0,1].forEach(function(versatz){
+      var d = new Date(jetzt.getTime() + versatz*86400000);
+      var iso = isoVon(d), tag = (d.getDay()+6)%7;
+      state.wochenplan.forEach(function(e){
+        if(e.tag===tag && e.erinnerungMin>0 && e.von) kandidaten.push({e:e, iso:iso});
+      });
+      state.termine.forEach(function(e){
+        if(e.datum===iso && e.erinnerungMin>0 && e.von) kandidaten.push({e:e, iso:iso});
+      });
+    });
+    kandidaten.forEach(function(k){
+      var start = zeitAmTag(k.iso, k.e.von);
+      var weck = new Date(start.getTime() - k.e.erinnerungMin*60000);
+      var key = k.iso+"|"+k.e.id;
+      if(gefeuert[key]) return;
+      if(jetzt >= weck && jetzt < start){
+        merkeGefeuert(key);
+        alarmZeigen(k.e, start);
+      }
+    });
+  }
+  function erinnerungsKnopfPruefen(){
+    var b = el("btnErinnerung");
+    var moeglich = false;
+    try{ moeglich = !!window.Notification && Notification.permission !== "granted"; }catch(_){}
+    b.hidden = !moeglich;
+    try{ if(window.Notification && Notification.permission === "denied") b.hidden = true; }catch(_){}
+  }
+  el("btnErinnerung").addEventListener("click", function(){
+    try{
+      Notification.requestPermission().then(function(){ erinnerungsKnopfPruefen(); });
+    }catch(_){ erinnerungsKnopfPruefen(); }
+  });
+  erinnerungsKnopfPruefen();
+  setInterval(pruefeErinnerungen, 30000);
+  setTimeout(pruefeErinnerungen, 2500);
+
+  // ---------- Bedienung ----------
+  document.querySelectorAll(".tab").forEach(function(t){
+    t.addEventListener("click", function(){ state.tab = t.dataset.tab; zeichne(); });
+  });
+  el("btnNeu").addEventListener("click", function(){ eintragFormular(null, null); });
+  el("btnPersonen").addEventListener("click", personenFormular);
+  el("btnDrucken").addEventListener("click", function(){
+    if(state.tab!=="woche"){ state.tab="woche"; zeichne(); }
+    setTimeout(function(){ window.print(); }, 60);
+  });
+  el("inhalt").addEventListener("click", function(ev){
+    var datum = state.punkteDatum || heuteIso();
+
+    var a = ev.target.closest(".aufgabe");
+    if(a){
+      var aufgabe = null;
+      state.aufgaben.forEach(function(x){ if(x.id===a.dataset.aid) aufgabe = x; });
+      if(aufgabe) aufgabeUmschalten(a.dataset.pid, datum, aufgabe);
+      return;
+    }
+    var w = ev.target.closest(".b-weg");
+    if(w){ buchungLoeschen(w.dataset.pid, w.dataset.bdatum, w.dataset.bid); return; }
+    var ein = ev.target.closest("[data-einloesen]");
+    if(ein){ einloesenFormular(ein.dataset.einloesen, datum); return; }
+    var bo = ev.target.closest("[data-bonus]");
+    if(bo){ bonusFormular(bo.dataset.bonus, datum); return; }
+
+    var e = ev.target.closest(".eintrag"); if(!e) return;
+    eintragFormular(e.dataset.art, e.dataset.id);
+  });
+  el("personenLeiste").addEventListener("click", function(ev){
+    var c = ev.target.closest("[data-pid]"); if(!c) return;
+    state.filter = state.filter===c.dataset.pid ? null : c.dataset.pid;
+    zeichne();
+  });
+
+  zeichne();
+
+  // ---------- Familien-Code ----------
+  var CODE_SCHLUESSEL = "fp_familiencode";
+  var verbunden = false;
+
+  function codeSaeubern(c){ return String(c||"").trim().replace(/[^A-Za-z0-9_.~:@+-]/g, ""); }
+  function codeLesen(){ try{ return localStorage.getItem(CODE_SCHLUESSEL) || ""; }catch(_){ return ""; } }
+  function codeSchreiben(c){ try{ localStorage.setItem(CODE_SCHLUESSEL, c); }catch(_){} }
+  function codeLoeschen(){
+    verbunden = false;
+    try{ localStorage.removeItem(CODE_SCHLUESSEL); }catch(_){}
+  }
+  function torZeigen(fehlerText){
+    var f = el("torFehler");
+    if(fehlerText){ f.hidden = false; f.textContent = fehlerText; } else { f.hidden = true; }
+    el("torCode").value = "";
+    el("tor").hidden = false;
+    setTimeout(function(){ try{ el("torCode").focus(); }catch(_){} }, 60);
+  }
+  el("torOk").addEventListener("click", function(){
+    var c = codeSaeubern(el("torCode").value);
+    if(!c) return;
+    codeSchreiben(c);
+    el("tor").hidden = true;
+    verbinden_mit(c);
+  });
+  el("torCode").addEventListener("keydown", function(ev){
+    if(ev.key==="Enter"){ ev.preventDefault(); el("torOk").click(); }
+  });
+
+  // ---------- Gemeinsamen Speicher verbinden ----------
+  function verbinden_mit(code){
+    if(verbunden) return;
+    var wurzel = firebase.firestore().collection("raeume").doc(code);
+    db = { collection: function(name){ return wurzel.collection(name); } };
+    verbunden = true;
+    speicherBereit = true;
+    if(hinweisArt==="fehler"){ el("hinweis").hidden = true; hinweisArt = null; }
+    ["personen","wochenplan","termine","aufgaben","belohnungen","punkte"].forEach(abonnieren);
+    erstbefuellung();
+  }
+
+  // Beim allerersten Start ein paar Aufgaben und Belohnungen als Vorlage anlegen.
+  function erstbefuellung(){
+    db.collection("aufgaben").get().then(function(snap){
+      if(!snap.empty) return;
+      var aufgaben = [
+        ["a-hausuebung", "Hausübung ohne Erinnern gemacht", 3],
+        ["a-zimmer",     "Zimmer aufgeräumt",               2],
+        ["a-tisch",      "Tisch abgeräumt",                 1],
+        ["a-muell",      "Müll rausgebracht",               2],
+        ["a-ueben",      "Geübt (Musik)",                   3]
+      ];
+      aufgaben.forEach(function(a){
+        db.collection("aufgaben").doc(a[0]).set({titel:a[1], punkte:a[2], personId:""}).catch(function(){});
+      });
+      var belohnungen = [
+        ["b-bildschirm", "30 Minuten extra Bildschirmzeit", 15],
+        ["b-eis",        "Eis essen gehen",                 25],
+        ["b-schwimmbad", "Schwimmbad",                      40],
+        ["b-kino",       "Kino",                            60]
+      ];
+      belohnungen.forEach(function(b){
+        db.collection("belohnungen").doc(b[0]).set({titel:b[1], kosten:b[2], personId:""}).catch(function(){});
+      });
+    }).catch(function(){});
+  }
+
+  function start(){
+    if(!window.firebase || !window.FIREBASE_KONFIG || !FIREBASE_KONFIG.apiKey){
+      meldung("In der Datei fehlen noch die Zugangsdaten aus Firebase. Solange bleiben Änderungen nur in diesem Fenster.", null, null, "fehler");
+      return;
+    }
+    try{
+      firebase.initializeApp(FIREBASE_KONFIG);
+    }catch(e){
+      meldung("Die Zugangsdaten in der Datei stimmen nicht. Bitte nochmal aus Firebase kopieren.", null, null, "fehler");
+      return;
+    }
+    firebase.auth().onAuthStateChanged(function(nutzer){
+      if(!nutzer) return;
+      var c = codeLesen();
+      if(c) verbinden_mit(c); else torZeigen(null);
+    });
+    firebase.auth().signInAnonymously().catch(function(){
+      meldung("Anmeldung nicht möglich. In Firebase muss die anonyme Anmeldung eingeschaltet sein.", null, null, "fehler");
+    });
+  }
+  start();
+})();
+</script>
+
+</body>
+</html>
