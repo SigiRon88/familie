@@ -216,6 +216,96 @@
 
   .leer{color:var(--muted);font-size:14px;font-style:italic;padding:2px 0}
 
+  /* ---------- Wochenansicht: Stundenraster ---------- */
+  .wochen-kopf{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .wk-text{font-weight:600;font-variant-numeric:tabular-nums;font-size:15.5px}
+
+  .nur-breit{display:none}
+  @media (min-width:900px){
+    .nur-breit{display:block}
+    .nur-schmal{display:none}
+  }
+
+  .raster{
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    overflow:hidden;box-shadow:var(--shadow);
+  }
+  .raster-kopf,.raster-ganztags{
+    display:grid;grid-template-columns:56px repeat(7,minmax(0,1fr));
+    border-bottom:1px solid var(--line);
+  }
+  .raster-kopf{background:var(--surface-2)}
+  .rk-ecke{
+    padding:8px 6px;font-size:11px;color:var(--muted);text-align:right;
+    font-family:"Archivo",sans-serif;font-weight:600;
+  }
+  .rk-tag{
+    padding:9px 8px;font-family:"Archivo",sans-serif;font-size:13px;color:var(--muted);
+    border-left:1px solid var(--line);font-variant-numeric:tabular-nums;
+  }
+  .rk-tag b{color:var(--ink);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+  .rk-tag.ist-heute{background:var(--accent-soft)}
+  .rk-tag.ist-heute b{color:var(--accent)}
+  .gt-zelle{
+    border-left:1px solid var(--line);padding:5px;display:flex;flex-direction:column;gap:4px;
+    min-height:34px;
+  }
+  .gt-block{
+    background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--pf);
+    border-radius:6px;padding:4px 7px;font-size:12.5px;font-weight:600;text-align:left;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);
+  }
+
+  .raster-koerper{
+    position:relative;
+    display:grid;grid-template-columns:56px repeat(7,minmax(0,1fr));
+  }
+  .raster-stunden{position:relative}
+  .rs-stunde{
+    position:absolute;right:6px;transform:translateY(-50%);
+    font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;
+    font-family:"Archivo",sans-serif;font-weight:600;
+  }
+  .raster-spalte{
+    position:relative;border-left:1px solid var(--line);
+    background:repeating-linear-gradient(
+      to bottom,
+      var(--line) 0px, var(--line) 1px,
+      transparent 1px, transparent 51px
+    );
+  }
+  .raster-spalte.ist-heute{
+    background:
+      repeating-linear-gradient(to bottom, var(--line) 0px, var(--line) 1px, transparent 1px, transparent 51px),
+      var(--accent-soft);
+  }
+  .block{
+    position:absolute;overflow:hidden;text-align:left;
+    background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--pf);
+    border-radius:7px;padding:4px 6px;display:flex;flex-direction:column;gap:1px;
+    box-shadow:0 1px 2px rgba(0,0,0,.08);
+  }
+  .block:hover{border-color:var(--muted);border-left-color:var(--pf);z-index:3}
+  .bl-titel{
+    font-weight:600;font-size:12.5px;line-height:1.2;color:var(--ink);
+    overflow:hidden;text-overflow:ellipsis;
+  }
+  .bl-neben{
+    font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .block.kurz{flex-direction:row;align-items:baseline;gap:5px;padding:2px 6px}
+  .block.kurz .bl-titel{font-size:12px;white-space:nowrap}
+  .block.kurz .bl-neben{font-size:11px}
+  .jetzt-linie{
+    position:absolute;left:56px;right:0;height:2px;background:var(--danger);
+    z-index:4;pointer-events:none;
+  }
+  .jetzt-linie::before{
+    content:"";position:absolute;left:-4px;top:-3px;width:8px;height:8px;
+    border-radius:50%;background:var(--danger);
+  }
+
   /* ---------- Personen-Chips ---------- */
   .personen-leiste{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
   .pchip{
@@ -286,6 +376,54 @@
     border:1px solid var(--line);background:var(--bg);border-radius:10px;
     width:46px;min-height:46px;color:var(--danger);font-weight:700;flex:none;
   }
+
+  /* ---------- Monatskalender im Formular ---------- */
+  .kal{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px}
+  .kal-kopf{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+  .kal-monat{font-weight:600;font-size:15.5px}
+  .kal-pfeil{
+    background:var(--surface);border:1px solid var(--line);border-radius:8px;
+    min-width:38px;min-height:38px;font-size:18px;line-height:1;color:var(--muted);
+  }
+  .kal-pfeil:hover{color:var(--ink);border-color:var(--muted)}
+  .kal-wochentage,.kal-gitter{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+  .kal-wochentage{margin-bottom:3px}
+  .kal-wochentage span{
+    text-align:center;font-family:"Archivo",sans-serif;font-size:11.5px;font-weight:600;
+    color:var(--muted);text-transform:uppercase;letter-spacing:.04em;
+  }
+  .kal-tag{
+    aspect-ratio:1/1;max-width:100%;border:1px solid transparent;background:var(--surface);
+    border-radius:9px;font-family:"Archivo",sans-serif;font-weight:600;font-size:14.5px;
+    color:var(--ink);font-variant-numeric:tabular-nums;min-height:38px;padding:0;
+  }
+  .kal-tag:hover{border-color:var(--muted)}
+  .kal-tag.ist-heute{border-color:var(--accent);color:var(--accent)}
+  .kal-tag.an{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+  .kal-leer{min-height:38px}
+  .kal-liste{
+    display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;
+    max-height:96px;overflow-y:auto;
+  }
+  .kal-marke{
+    background:var(--accent-soft);border:1px solid var(--line);border-radius:7px;
+    padding:4px 8px;font-size:12.5px;font-weight:600;color:var(--ink);
+    font-variant-numeric:tabular-nums;min-height:32px;
+  }
+  .kal-marke:hover{border-color:var(--danger);color:var(--danger)}
+  .kal-fuss{
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+    margin-top:10px;padding-top:10px;border-top:1px solid var(--line);
+  }
+  .kal-anzahl{font-size:14px;color:var(--muted);font-weight:600}
+  .kal-reihe{display:flex;gap:6px;align-items:center;margin-left:auto}
+  .kal-reihe select{width:auto;min-height:40px;padding:6px 8px}
+  .kal-reihe input{width:56px;min-height:40px;text-align:center;padding:6px;font-variant-numeric:tabular-nums}
+  .kal-knopf{
+    background:var(--surface);border:1px solid var(--line);border-radius:9px;
+    min-height:40px;padding:0 12px;font-family:"Archivo",sans-serif;font-weight:600;font-size:14px;
+  }
+  .kal-knopf:hover{border-color:var(--accent);color:var(--accent)}
 
   /* ---------- Belohnungspunkte ---------- */
   .punkte-kopf{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -382,6 +520,20 @@
     header,nav,.neu,.hinweis,.personen-leiste,.icon-btn{display:none !important}
     body{background:#fff;color:#000;font-size:11pt}
     main{padding:0;max-width:none}
+    /* Zum Drucken immer das Stundenraster, nie die Handy-Liste */
+    .nur-breit{display:block !important}
+    .nur-schmal{display:none !important}
+    .raster{border:1px solid #000;box-shadow:none;background:#fff}
+    .raster-kopf{background:#fff;border-bottom:1px solid #000}
+    .rk-tag,.gt-zelle,.raster-spalte{border-left:1px solid #999}
+    .rk-tag.ist-heute,.raster-spalte.ist-heute{background:#fff}
+    .raster-spalte{
+      background:repeating-linear-gradient(to bottom,#ddd 0px,#ddd 1px,transparent 1px,transparent 51px) !important;
+    }
+    .block,.gt-block{background:#fff;border:1px solid #999;border-left:3px solid #000;box-shadow:none}
+    .bl-neben{color:#444}
+    .jetzt-linie{display:none}
+    .wochen-kopf{margin-bottom:8px}
     .wochenraster{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
     .tag{background:#fff;border:1px solid #999;break-inside:avoid;page-break-inside:avoid}
     .tag.ist-heute{background:#fff;border-color:#000}
@@ -482,6 +634,8 @@ var FIREBASE_KONFIG = {
 
   var TAGE = ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];
   var TAGE_KURZ = ["Mo","Di","Mi","Do","Fr","Sa","So"];
+  var MONATE = ["Jänner","Februar","März","April","Mai","Juni",
+                "Juli","August","September","Oktober","November","Dezember"];
   var ARTEN = ["Schule","Kindergarten","Musikschule","Nachhilfe","Sport","Arzt","Arbeit","Sonstiges"];
   var FARBEN = [
     {key:"pine",   name:"Grün"},
@@ -503,6 +657,7 @@ var FIREBASE_KONFIG = {
     belohnungen: [],
     punkte: [],
     filter: null,      // Person-Id oder null
+    wochenVersatz: 0,  // 0 = diese Woche
     vergangeneZeigen: false,
     punkteDatum: null  // wird beim Zeichnen auf heute gesetzt
   };
@@ -689,21 +844,179 @@ var FIREBASE_KONFIG = {
     return html;
   }
 
+  function zeitZuMin(hhmm){
+    if(!hhmm) return null;
+    var t = hhmm.split(":");
+    return (+t[0])*60 + (+t[1]);
+  }
+  function minZuZeit(m){ return pad(Math.floor(m/60))+":"+pad(m%60); }
+
+  // Überlappende Einträge nebeneinander legen
+  function spurenVerteilen(liste){
+    liste.sort(function(a,b){ return (a.start-b.start) || (a.ende-b.ende); });
+    var gruppe = [], gruppeEnde = -1;
+    function abschliessen(g){
+      var n = 0;
+      g.forEach(function(x){ if(x.spur+1 > n) n = x.spur+1; });
+      g.forEach(function(x){ x.spuren = n; });
+    }
+    liste.forEach(function(x){
+      if(gruppe.length && x.start >= gruppeEnde){ abschliessen(gruppe); gruppe = []; gruppeEnde = -1; }
+      var belegt = gruppe.filter(function(a){ return a.ende > x.start; }).map(function(a){ return a.spur; });
+      x.spur = 0;
+      while(belegt.indexOf(x.spur) >= 0) x.spur++;
+      gruppe.push(x);
+      if(x.ende > gruppeEnde) gruppeEnde = x.ende;
+    });
+    if(gruppe.length) abschliessen(gruppe);
+    return liste;
+  }
+
+  function wochenBasis(){
+    var d = new Date();
+    d.setDate(d.getDate() - tagIndexHeute() + (state.wochenVersatz||0)*7);
+    d.setHours(0,0,0,0);
+    return d;
+  }
+
   function zeichneWoche(){
-    var heuteIdx = tagIndexHeute();
-    var basis = new Date();
-    basis.setDate(basis.getDate()-heuteIdx); // Montag dieser Woche
-    var html = '<div class="wochenraster">';
+    var basis = wochenBasis();
+    var heuteIso_ = heuteIso();
+    var tage = [];
     for(var i=0;i<7;i++){
       var d = new Date(basis.getTime()+i*86400000);
-      var eintraege = eintraegeFuerTag(i, isoVon(d));
-      html += '<div class="tag'+(i===heuteIdx?" ist-heute":"")+'">'
-        + '<h3><span>'+TAGE[i]+'</span><span>'+d.getDate()+"."+(d.getMonth()+1)+'.</span></h3>'
-        + (eintraege.length ? eintraege.map(function(e){return eintragHtml(e);}).join("")
-                            : '<p class="leer">frei</p>')
-        + '</div>';
+      var iso = isoVon(d);
+      tage.push({ index:i, datum:d, iso:iso, istHeute:iso===heuteIso_, eintraege:eintraegeFuerTag(i, iso) });
     }
+
+    var letzter = new Date(basis.getTime()+6*86400000);
+    var kopf = '<div class="wochen-kopf">'
+      + '<button class="icon-btn" id="wocheZurueck" aria-label="Woche zurück">‹</button>'
+      + '<span class="wk-text ui">' + basis.getDate()+"."+(basis.getMonth()+1)+". – "
+        + letzter.getDate()+"."+(letzter.getMonth()+1)+"."+letzter.getFullYear()
+        + (state.wochenVersatz===0 ? " · diese Woche" : "") + '</span>'
+      + '<button class="icon-btn" id="wocheVor" aria-label="Woche vor">›</button>'
+      + (state.wochenVersatz!==0 ? '<button class="icon-btn" id="wocheHeute">Heute</button>' : "")
+      + '</div>';
+
+    return kopf
+      + '<div class="nur-breit">' + wochenRasterHtml(tage) + '</div>'
+      + '<div class="nur-schmal">' + wochenListeHtml(tage) + '</div>';
+  }
+
+  function wochenListeHtml(tage){
+    var html = '<div class="wochenraster">';
+    tage.forEach(function(t){
+      html += '<div class="tag'+(t.istHeute?" ist-heute":"")+'">'
+        + '<h3><span>'+TAGE[t.index]+'</span><span>'+t.datum.getDate()+"."+(t.datum.getMonth()+1)+'.</span></h3>'
+        + (t.eintraege.length ? t.eintraege.map(function(e){ return eintragHtml(e); }).join("")
+                              : '<p class="leer">frei</p>')
+        + '</div>';
+    });
     return html + '</div>';
+  }
+
+  function wochenRasterHtml(tage){
+    var PX_PRO_MIN = 0.85;
+    var STANDARD_DAUER = 45;
+
+    // Zeitbereich der Woche bestimmen
+    var frueh = 7*60, spaet = 19*60;
+    tage.forEach(function(t){
+      t.eintraege.forEach(function(e){
+        var v = zeitZuMin(e.von);
+        if(v === null) return;
+        var bis = zeitZuMin(e.bis);
+        var ende = (bis !== null && bis > v) ? bis : v + STANDARD_DAUER;
+        if(e.daheim){
+          var dh = zeitZuMin(e.daheim);
+          if(dh !== null && dh > ende) ende = dh;
+        }
+        if(v < frueh) frueh = v;
+        if(ende > spaet) spaet = ende;
+      });
+    });
+    var start = Math.floor(frueh/60)*60;
+    var ende = Math.ceil(spaet/60)*60;
+    if(ende - start < 480) ende = start + 480;
+    var hoehe = Math.round((ende-start)*PX_PRO_MIN);
+
+    // Kopfzeile
+    var html = '<div class="raster">';
+    html += '<div class="raster-kopf"><span class="rk-ecke"></span>';
+    tage.forEach(function(t){
+      html += '<span class="rk-tag'+(t.istHeute?" ist-heute":"")+'">'
+        + '<b>'+TAGE_KURZ[t.index]+'</b> '+t.datum.getDate()+"."+(t.datum.getMonth()+1)+'.</span>';
+    });
+    html += '</div>';
+
+    // Ganztägige Einträge (ohne Uhrzeit)
+    var hatGanztags = tage.some(function(t){
+      return t.eintraege.some(function(e){ return !e.von; });
+    });
+    if(hatGanztags){
+      html += '<div class="raster-ganztags"><span class="rk-ecke">ganztags</span>';
+      tage.forEach(function(t){
+        html += '<span class="gt-zelle">'
+          + t.eintraege.filter(function(e){ return !e.von; }).map(function(e){
+              var p = person(e.personId);
+              return '<button class="gt-block" style="--pf:'+farbVar(p)+'" data-art="'+escape(e._quelle)
+                + '" data-id="'+escape(e.id)+'">'+escape(e.titel)+'</button>';
+            }).join("")
+          + '</span>';
+      });
+      html += '</div>';
+    }
+
+    // Stundenachse + Spalten
+    var stunden = "";
+    for(var m=start; m<=ende; m+=60){
+      stunden += '<span class="rs-stunde" style="top:'+Math.round((m-start)*PX_PRO_MIN)+'px">'
+        + minZuZeit(m) + '</span>';
+    }
+
+    html += '<div class="raster-koerper" style="height:'+hoehe+'px">'
+      + '<div class="raster-stunden">'+stunden+'</div>';
+
+    tage.forEach(function(t){
+      var bloecke = [];
+      t.eintraege.forEach(function(e){
+        var v = zeitZuMin(e.von);
+        if(v === null) return;
+        var bis = zeitZuMin(e.bis);
+        var bEnde = (bis !== null && bis > v) ? bis : v + STANDARD_DAUER;
+        bloecke.push({ start:v, ende:bEnde, e:e });
+      });
+      spurenVerteilen(bloecke);
+
+      html += '<div class="raster-spalte'+(t.istHeute?" ist-heute":"")+'">';
+      bloecke.forEach(function(x){
+        var p = person(x.e.personId);
+        var oben = Math.round((x.start-start)*PX_PRO_MIN);
+        var h = Math.max(22, Math.round((x.ende-x.start)*PX_PRO_MIN) - 2);
+        var breite = 100 / (x.spuren || 1);
+        var klasse = h < 42 ? " kurz" : "";
+        html += '<button class="block'+klasse+'" style="--pf:'+farbVar(p)+';top:'+oben+'px;height:'+h+'px;'
+          + 'left:calc('+(x.spur*breite)+'% + 2px);width:calc('+breite+'% - 4px)" '
+          + 'data-art="'+escape(x.e._quelle)+'" data-id="'+escape(x.e.id)+'" '
+          + 'title="'+escape(x.e.von+(x.e.bis?"–"+x.e.bis:"")+" "+x.e.titel+(p?" ("+p.name+")":""))+'">'
+          + '<span class="bl-titel">'+escape(x.e.titel)+'</span>'
+          + '<span class="bl-neben">'+escape(x.e.von)+(p?' · '+escape(p.name):"")+'</span>'
+          + '</button>';
+      });
+      html += '</div>';
+    });
+
+    // Linie für "jetzt"
+    if(state.wochenVersatz === 0){
+      var jetzt = new Date();
+      var jetztMin = jetzt.getHours()*60 + jetzt.getMinutes();
+      if(jetztMin >= start && jetztMin <= ende){
+        html += '<div class="jetzt-linie" style="top:'+Math.round((jetztMin-start)*PX_PRO_MIN)+'px"></div>';
+      }
+    }
+
+    return html + '</div></div>';
   }
 
   function zeichneTermine(){
@@ -927,6 +1240,13 @@ var FIREBASE_KONFIG = {
     var bv = el("btnVergangene");
     if(bv) bv.onclick = function(){ state.vergangeneZeigen = !state.vergangeneZeigen; zeichne(); };
 
+    if(state.tab==="woche"){
+      var wz = el("wocheZurueck"), wv = el("wocheVor"), wh = el("wocheHeute");
+      if(wz) wz.onclick = function(){ state.wochenVersatz--; zeichne(); };
+      if(wv) wv.onclick = function(){ state.wochenVersatz++; zeichne(); };
+      if(wh) wh.onclick = function(){ state.wochenVersatz = 0; zeichne(); };
+    }
+
     if(verbunden && !state.personen.length && hinweisArt!=="fehler"){
       meldung("Zuerst eintragen, wer zur Familie gehört.", "Personen anlegen", personenFormular, "start");
     } else if(hinweisArt==="start" && state.personen.length){
@@ -1001,8 +1321,27 @@ var FIREBASE_KONFIG = {
               + (gewaehlteTage.indexOf(i)>=0) + '">'+t+'</button>';
           }).join("")
         + '</div></div>'
-      + '<div class="feld" id="feldDatum" hidden><label for="fDatum">Datum</label>'
-        + '<input type="date" id="fDatum" value="'+escape(e.datum||heuteIso())+'"></div>'
+      + '<div class="feld" id="feldDatum" hidden><label>An welchen Tagen</label>'
+        + '<div class="kal">'
+          + '<div class="kal-kopf">'
+            + '<button type="button" class="kal-pfeil" id="kalZurueck" aria-label="Monat zurück">‹</button>'
+            + '<span class="kal-monat ui" id="kalMonat"></span>'
+            + '<button type="button" class="kal-pfeil" id="kalVor" aria-label="Monat vor">›</button>'
+          + '</div>'
+          + '<div class="kal-wochentage">'+TAGE_KURZ.map(function(t){return '<span>'+t+'</span>';}).join("")+'</div>'
+          + '<div class="kal-gitter" id="kalGitter"></div>'
+          + '<div class="kal-liste" id="kalListe"></div>'
+          + '<div class="kal-fuss">'
+            + '<span class="kal-anzahl ui" id="kalAnzahl"></span>'
+            + '<span class="kal-reihe" id="kalReihe">'
+              + '<select id="kalTakt" aria-label="Abstand"><option value="1">jede Woche</option>'
+              + '<option value="2" selected>alle 2 Wochen</option><option value="3">alle 3 Wochen</option>'
+              + '<option value="4">alle 4 Wochen</option></select>'
+              + '<input type="text" id="kalMal" inputmode="numeric" value="8" aria-label="Anzahl Termine">'
+              + '<button type="button" class="kal-knopf" id="kalFuellen">Reihe</button>'
+            + '</span>'
+          + '</div>'
+        + '</div></div>'
       + '<div class="feld"><label>Uhrzeit</label><div class="zeile">'
         + '<input type="time" id="fVon" value="'+escape(e.von||"")+'" aria-label="von">'
         + '<input type="time" id="fBis" value="'+escape(e.bis||"")+'" aria-label="bis">'
@@ -1025,10 +1364,88 @@ var FIREBASE_KONFIG = {
       + '</div>'
     );
 
+    // --- Monatskalender mit Mehrfachauswahl ---
+    var gewaehlteDaten = (vorhanden && quelle==="termine" && e.datum) ? [e.datum] : [heuteIso()];
+    var kalMonat;
+    (function(){
+      var t = (gewaehlteDaten[0] || heuteIso()).split("-");
+      kalMonat = new Date(+t[0], +t[1]-1, 1);
+    })();
+
+    function kalZeichnen(){
+      var g = b.querySelector("#kalGitter");
+      if(!g) return;
+      b.querySelector("#kalMonat").textContent = MONATE[kalMonat.getMonth()]+" "+kalMonat.getFullYear();
+      var jahr = kalMonat.getFullYear(), monat = kalMonat.getMonth();
+      var versatz = (new Date(jahr, monat, 1).getDay()+6)%7;
+      var anzahlTage = new Date(jahr, monat+1, 0).getDate();
+      var html = "";
+      for(var i=0;i<versatz;i++) html += '<span class="kal-leer"></span>';
+      for(var d=1; d<=anzahlTage; d++){
+        var iso = jahr+"-"+pad(monat+1)+"-"+pad(d);
+        var an = gewaehlteDaten.indexOf(iso) >= 0;
+        html += '<button type="button" class="kal-tag'+(an?" an":"")+(iso===heuteIso()?" ist-heute":"")
+          + '" data-iso="'+iso+'" aria-pressed="'+an+'">'+d+'</button>';
+      }
+      g.innerHTML = html;
+      var n = gewaehlteDaten.length;
+      b.querySelector("#kalAnzahl").textContent = n===0 ? "kein Tag gewählt" : (n===1 ? "1 Termin" : n+" Termine");
+      b.querySelector("#kalReihe").hidden = !!vorhanden;
+
+      var lst = b.querySelector("#kalListe");
+      if(n > 1){
+        lst.hidden = false;
+        lst.innerHTML = gewaehlteDaten.slice().sort().map(function(iso){
+          var t = iso.split("-");
+          return '<button type="button" class="kal-marke" data-iso="'+iso+'" '
+            + 'title="Diesen Tag wieder entfernen">'+(+t[2])+"."+(+t[1])+". ×</button>";
+        }).join("");
+      } else {
+        lst.hidden = true; lst.innerHTML = "";
+      }
+    }
+
+    b.querySelector("#kalGitter").addEventListener("click", function(ev){
+      var t = ev.target.closest(".kal-tag"); if(!t) return;
+      var iso = t.dataset.iso, i = gewaehlteDaten.indexOf(iso);
+      if(vorhanden){ gewaehlteDaten = [iso]; }
+      else if(i >= 0){ gewaehlteDaten.splice(i,1); }
+      else { gewaehlteDaten.push(iso); }
+      kalZeichnen();
+    });
+    b.querySelector("#kalListe").addEventListener("click", function(ev){
+      var m = ev.target.closest(".kal-marke"); if(!m) return;
+      var i = gewaehlteDaten.indexOf(m.dataset.iso);
+      if(i >= 0) gewaehlteDaten.splice(i,1);
+      kalZeichnen();
+    });
+    b.querySelector("#kalZurueck").addEventListener("click", function(){
+      kalMonat = new Date(kalMonat.getFullYear(), kalMonat.getMonth()-1, 1); kalZeichnen();
+    });
+    b.querySelector("#kalVor").addEventListener("click", function(){
+      kalMonat = new Date(kalMonat.getFullYear(), kalMonat.getMonth()+1, 1); kalZeichnen();
+    });
+    b.querySelector("#kalFuellen").addEventListener("click", function(){
+      if(!gewaehlteDaten.length) return;
+      var takt = parseInt(b.querySelector("#kalTakt").value, 10) || 1;
+      var mal = parseInt(b.querySelector("#kalMal").value, 10) || 2;
+      if(mal < 2) mal = 2; if(mal > 40) mal = 40;
+      var sortiert = gewaehlteDaten.slice().sort();
+      var s = sortiert[sortiert.length-1].split("-");
+      var d = new Date(+s[0], +s[1]-1, +s[2]);
+      for(var k=1; k<mal; k++){
+        d.setDate(d.getDate() + takt*7);
+        var iso = isoVon(d);
+        if(gewaehlteDaten.indexOf(iso) < 0) gewaehlteDaten.push(iso);
+      }
+      kalZeichnen();
+    });
+
     function typUmschalten(){
       var woche = b.querySelector("#fTyp").value==="wochenplan";
       b.querySelector("#feldTage").hidden = !woche;
       b.querySelector("#feldDatum").hidden = woche;
+      if(!woche) kalZeichnen();
     }
     b.querySelector("#fTyp").addEventListener("change", typUmschalten);
     typUmschalten();
@@ -1075,8 +1492,13 @@ var FIREBASE_KONFIG = {
         if(vorhanden){ speichern("wochenplan", id, Object.assign({tag:tage[0]}, daten)); }
         else { tage.forEach(function(t){ anlegen("wochenplan", Object.assign({tag:t}, daten)); }); }
       } else {
-        daten.datum = b.querySelector("#fDatum").value || heuteIso();
-        if(vorhanden) speichern("termine", id, daten); else anlegen("termine", daten);
+        var tage = gewaehlteDaten.slice().sort();
+        if(!tage.length) return;
+        if(vorhanden){
+          speichern("termine", id, Object.assign({datum:tage[0]}, daten));
+        } else {
+          tage.forEach(function(t){ anlegen("termine", Object.assign({datum:t}, daten)); });
+        }
       }
       blattSchliessen();
     });
@@ -1388,7 +1810,7 @@ var FIREBASE_KONFIG = {
     var bo = ev.target.closest("[data-bonus]");
     if(bo){ bonusFormular(bo.dataset.bonus, datum); return; }
 
-    var e = ev.target.closest(".eintrag"); if(!e) return;
+    var e = ev.target.closest(".eintrag, .block, .gt-block"); if(!e) return;
     eintragFormular(e.dataset.art, e.dataset.id);
   });
   el("personenLeiste").addEventListener("click", function(ev){
