@@ -277,6 +277,30 @@
   .tag .eintrag .text{padding:2px 10px 10px}
 
   .leer{color:var(--muted);font-size:14px;font-style:italic;padding:2px 0}
+  /* ---------- Feiertage und schulfreie Tage ---------- */
+  .ft{
+    font-family:"Archivo",sans-serif;font-size:11.5px;font-weight:700;
+    letter-spacing:.03em;text-transform:none;white-space:nowrap;
+    border-radius:5px;padding:1px 6px;
+  }
+  .ft.gesetzlich{background:var(--accent);color:var(--accent-ink)}
+  .ft.schulfrei{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+  .rk-tag .ft{display:block;margin-top:2px;width:fit-content;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .rk-tag.ist-feiertag{background:var(--surface)}
+  .tag.ist-feiertag{border-color:var(--accent)}
+  .abschnitt-kopf .ft{align-self:center}
+  .kal-tag.ist-feiertag.gesetzlich{color:var(--accent);font-weight:700}
+  .kal-tag.ist-feiertag.gesetzlich::after{
+    content:"";display:block;width:4px;height:4px;border-radius:50%;
+    background:var(--accent);margin:1px auto 0;
+  }
+  .kal-tag.ist-feiertag.schulfrei::after{
+    content:"";display:block;width:4px;height:4px;border-radius:50%;
+    background:var(--muted);margin:1px auto 0;
+  }
+  .kal-tag.an.ist-feiertag,.kal-tag.an.ist-feiertag.gesetzlich{color:var(--accent-ink)}
+  .kal-tag.an.ist-feiertag::after{background:var(--accent-ink)}
+
   .tag.frei-tag{padding:9px 12px;background:transparent;border-style:dashed}
   .tag.frei-tag h3 i{font-style:italic;font-weight:400;text-transform:none;letter-spacing:0}
 
@@ -780,6 +804,63 @@ var FIREBASE_KONFIG = {
     for(var i=0;i<ERINNERUNGEN.length;i++) if(ERINNERUNGEN[i].min===min) return ERINNERUNGEN[i].text;
     return min+" Minuten vorher";
   }
+  // ---------- Feiertage (Österreich) und schulfreie Tage in Salzburg ----------
+  // Werden für jedes Jahr berechnet, damit nichts nachgepflegt werden muss.
+  var feiertagsCache = {};
+
+  function ostersonntag(jahr){
+    var a = jahr % 19, b = Math.floor(jahr/100), c = jahr % 100;
+    var d = Math.floor(b/4), e = b % 4;
+    var f = Math.floor((b+8)/25), g = Math.floor((b-f+1)/3);
+    var h = (19*a + b - d - g + 15) % 30;
+    var i = Math.floor(c/4), k = c % 4;
+    var l = (32 + 2*e + 2*i - h - k) % 7;
+    var m = Math.floor((a + 11*h + 22*l) / 451);
+    var monat = Math.floor((h + l - 7*m + 114) / 31);
+    var tag = ((h + l - 7*m + 114) % 31) + 1;
+    return new Date(jahr, monat-1, tag);
+  }
+
+  function feiertageFuer(jahr){
+    if(feiertagsCache[jahr]) return feiertagsCache[jahr];
+    var liste = {};
+    function setz(datum, name, art){ liste[isoVon(datum)] = {name:name, art:art}; }
+    function fest(monat, tag, name){ setz(new Date(jahr, monat-1, tag), name, "gesetzlich"); }
+
+    fest(1, 1,  "Neujahr");
+    fest(1, 6,  "Heilige Drei Könige");
+    fest(5, 1,  "Staatsfeiertag");
+    fest(8, 15, "Mariä Himmelfahrt");
+    fest(10,26, "Nationalfeiertag");
+    fest(11,1,  "Allerheiligen");
+    fest(12,8,  "Mariä Empfängnis");
+    fest(12,25, "Christtag");
+    fest(12,26, "Stefanitag");
+
+    var o = ostersonntag(jahr);
+    function beweglich(tage, name){
+      var d = new Date(o.getTime());
+      d.setDate(d.getDate() + tage);
+      setz(d, name, "gesetzlich");
+    }
+    beweglich(1,  "Ostermontag");
+    beweglich(39, "Christi Himmelfahrt");
+    beweglich(50, "Pfingstmontag");
+    beweglich(60, "Fronleichnam");
+
+    // Salzburger Besonderheit: kein Feiertag mehr, aber schulfrei
+    var rupert = isoVon(new Date(jahr, 8, 24));
+    if(!liste[rupert]) liste[rupert] = {name:"Rupertitag", art:"schulfrei"};
+
+    feiertagsCache[jahr] = liste;
+    return liste;
+  }
+
+  function feiertag(iso){
+    if(!iso) return null;
+    return feiertageFuer(+iso.slice(0,4))[iso] || null;
+  }
+
   function person(id){
     for(var i=0;i<state.personen.length;i++) if(state.personen[i].id===id) return state.personen[i];
     return null;
@@ -905,15 +986,24 @@ var FIREBASE_KONFIG = {
     var h = eintraegeFuerTag(tagIndexHeute(), isoVon(heute));
     var m = eintraegeFuerTag((tagIndexHeute()+1)%7, isoVon(morgen));
 
+    function ftZeile(iso){
+      var ft = feiertag(iso);
+      if(!ft) return "";
+      return '<span class="ft '+ft.art+'">'+escape(ft.name)
+        + (ft.art==="schulfrei" ? " · schulfrei" : "") + '</span>';
+    }
+
     var html = '<section class="abschnitt"><div class="abschnitt-kopf"><h2>Heute · '
-      + TAGE[tagIndexHeute()] + '</h2><span class="zaehler">'+h.length+'</span></div>'
+      + TAGE[tagIndexHeute()] + '</h2>' + ftZeile(isoVon(heute))
+      + '<span class="zaehler">'+h.length+'</span></div>'
       + '<div class="liste">'
       + (h.length ? h.map(function(e){return eintragHtml(e);}).join("")
                   : '<p class="leer">Heute steht nichts im Plan.</p>')
       + '</div></section>';
 
     html += '<section class="abschnitt"><div class="abschnitt-kopf"><h2>Morgen · '
-      + TAGE[(tagIndexHeute()+1)%7] + '</h2><span class="zaehler">'+m.length+'</span></div>'
+      + TAGE[(tagIndexHeute()+1)%7] + '</h2>' + ftZeile(isoVon(morgen))
+      + '<span class="zaehler">'+m.length+'</span></div>'
       + '<div class="liste">'
       + (m.length ? m.map(function(e){return eintragHtml(e);}).join("")
                   : '<p class="leer">Morgen steht nichts im Plan.</p>')
@@ -996,8 +1086,10 @@ var FIREBASE_KONFIG = {
     var html = '<div class="wochenraster">';
     tage.forEach(function(t){
       var frei = !t.eintraege.length;
-      html += '<div class="tag'+(t.istHeute?" ist-heute":"")+(frei?" frei-tag":"")+'">'
-        + '<h3><span>'+TAGE[t.index]+'</span><span>'+t.datum.getDate()+"."+(t.datum.getMonth()+1)+'.'
+      var ft = feiertag(t.iso);
+      html += '<div class="tag'+(t.istHeute?" ist-heute":"")+(frei?" frei-tag":"")+(ft?" ist-feiertag":"")+'">'
+        + '<h3><span>'+TAGE[t.index]+(ft?' <span class="ft '+ft.art+'">'+escape(ft.name)+'</span>':"")+'</span>'
+        + '<span>'+t.datum.getDate()+"."+(t.datum.getMonth()+1)+'.'
         + (frei ? ' <i>frei</i>' : "") + '</span></h3>'
         + (frei ? "" : t.eintraege.map(function(e){ return eintragHtml(e); }).join(""))
         + '</div>';
@@ -1052,8 +1144,11 @@ var FIREBASE_KONFIG = {
     var html = '<div class="raster">';
     html += '<div class="raster-kopf"><span class="rk-ecke"></span>';
     tage.forEach(function(t){
-      html += '<span class="rk-tag'+(t.istHeute?" ist-heute":"")+'">'
-        + '<b>'+TAGE_KURZ[t.index]+'</b> '+t.datum.getDate()+"."+(t.datum.getMonth()+1)+'.</span>';
+      var ft = feiertag(t.iso);
+      html += '<span class="rk-tag'+(t.istHeute?" ist-heute":"")+(ft?" ist-feiertag":"")+'">'
+        + '<b>'+TAGE_KURZ[t.index]+'</b> '+t.datum.getDate()+"."+(t.datum.getMonth()+1)+'.'
+        + (ft ? '<span class="ft '+ft.art+'">'+escape(ft.name)+'</span>' : "")
+        + '</span>';
     });
     html += '</div>';
 
@@ -1642,8 +1737,10 @@ var FIREBASE_KONFIG = {
       for(var d=1; d<=anzahlTage; d++){
         var iso = jahr+"-"+pad(monat+1)+"-"+pad(d);
         var an = gewaehlteDaten.indexOf(iso) >= 0;
+        var ft = feiertag(iso);
         html += '<button type="button" class="kal-tag'+(an?" an":"")+(iso===heuteIso()?" ist-heute":"")
-          + '" data-iso="'+iso+'" aria-pressed="'+an+'">'+d+'</button>';
+          + (ft?" ist-feiertag "+ft.art:"")+'" data-iso="'+iso+'" aria-pressed="'+an+'"'
+          + (ft?' title="'+escape(ft.name)+'"':"")+'>'+d+'</button>';
       }
       g.innerHTML = html;
       var n = gewaehlteDaten.length;
